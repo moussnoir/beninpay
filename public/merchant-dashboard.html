@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeninPay - Mon Dashboard</title>
+<title>BeninPay - Dashboard Marchand</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -11,30 +11,25 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --primary: #6c5ce7;
-  --primary-light: #a29bfe;
-  --primary-dark: #5b4cdb;
-  --accent: #00cec9;
-  --accent-2: #fd79a8;
-  --bg: #0c0c1d;
-  --bg-2: #13132b;
-  --surface: #1a1a3e;
-  --surface-2: #222252;
-  --glass: rgba(26, 26, 62, 0.7);
-  --border: rgba(108, 92, 231, 0.2);
+  --primary: #667eea;
+  --primary-dark: #5568d3;
+  --secondary: #764ba2;
+  --accent: #00d2ff;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --bg: #0f0f1e;
+  --bg-2: #161630;
+  --surface: #1a1a2e;
+  --surface-2: #242444;
+  --border: #2d2d44;
   --border-light: rgba(255,255,255,0.06);
   --text: #ffffff;
-  --text-muted: #b2b2d8;
-  --text-dim: #6c6c9e;
-  --success: #00b894;
-  --success-bg: rgba(0, 184, 148, 0.1);
-  --warning: #fdcb6e;
-  --warning-bg: rgba(253, 203, 110, 0.1);
-  --danger: #ff6b6b;
-  --danger-bg: rgba(255, 107, 107, 0.1);
-  --gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
-  --gradient-2: linear-gradient(135deg, #00cec9, #81ecec);
-  --gradient-3: linear-gradient(135deg, #fd79a8, #fab1a0);
+  --text-muted: #a0a0b8;
+  --text-dim: #6c6c8e;
+  --gradient: linear-gradient(135deg, #667eea, #764ba2);
+  --gradient-2: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  --gradient-3: linear-gradient(135deg, #f093fb, #f5576c);
 }
 
 body {
@@ -46,88 +41,105 @@ body {
   overflow-x: hidden;
 }
 
-/* Animated background */
 body::before {
   content: '';
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 20%, rgba(0, 206, 201, 0.05) 0%, transparent 40%),
-              radial-gradient(ellipse at 60% 80%, rgba(253, 121, 168, 0.04) 0%, transparent 40%);
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(102,126,234,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(0,210,255,0.04) 0%, transparent 40%),
+              radial-gradient(ellipse at 60% 80%, rgba(118,75,162,0.04) 0%, transparent 40%);
   animation: bgFloat 20s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
-@keyframes bgFloat { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-2%, 1%); } }
-
-.container { max-width: 1200px; margin: 0 auto; padding: 32px 20px; position: relative; z-index: 1; }
+@keyframes bgFloat { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-2%,1%); } }
 
 /* Header */
 .header {
+  background: rgba(26,26,46,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
-  padding: 20px 28px;
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo { display: flex; align-items: center; gap: 14px; }
-.logo-mark {
-  width: 44px; height: 44px;
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo .icon {
+  width: 40px; height: 40px;
   background: var(--gradient);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(102,126,234,0.3);
 }
-.logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.logo-sub { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+.header-logo .name { font-size: 1.4em; font-weight: 800; letter-spacing: -0.5px; }
+.header-logo .subtitle { font-size: 0.75em; color: var(--text-muted); font-weight: 500; }
 
-.header-right { display: flex; align-items: center; gap: 12px; }
+.header-right { display: flex; align-items: center; gap: 16px; }
 .shop-badge {
-  padding: 8px 14px;
   background: var(--surface-2);
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
-  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8em;
   color: var(--text-muted);
-  font-weight: 500;
+  border: 1px solid var(--border);
 }
-
-.btn {
-  padding: 10px 20px; border: none; border-radius: 12px;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
+.plan-badge {
+  background: rgba(16,185,129,0.15);
+  color: var(--success);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75em;
+  font-weight: 700;
 }
-.btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 16px rgba(108,92,231,0.3); }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(108,92,231,0.4); }
-.btn-accent { background: var(--gradient-2); color: #0c0c1d; box-shadow: 0 4px 16px rgba(0,206,201,0.3); }
-.btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,206,201,0.4); }
-.btn-ghost { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border-light); }
-.btn-ghost:hover { background: var(--surface); color: var(--text); }
-.btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 14px; }
+.btn-logout {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: var(--error); color: white; border-color: var(--error); }
 
-/* Balance Hero Card */
+/* Main */
+.main { max-width: 1300px; margin: 0 auto; padding: 32px 24px; position: relative; z-index: 1; }
+
+/* Alert */
+.alert-bar {
+  padding: 12px 20px; border-radius: 12px; margin-bottom: 20px;
+  font-size: 0.85em; font-weight: 500; display: flex; align-items: center; gap: 10px;
+  animation: slideDown 0.3s ease-out; border: 1px solid;
+}
+.alert-success { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: var(--success); }
+.alert-error { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: var(--error); }
+@keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+/* Balance Hero */
 .balance-hero {
   background: var(--gradient);
   border-radius: 24px;
   padding: 40px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   position: relative;
   overflow: hidden;
 }
 .balance-hero::before {
   content: '';
   position: absolute;
-  top: -50%; right: -30%;
+  top: -50%; right: -20%;
   width: 400px; height: 400px;
   background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
   pointer-events: none;
@@ -135,394 +147,508 @@ body::before {
 .balance-hero::after {
   content: '';
   position: absolute;
-  bottom: -30%; left: -20%;
+  bottom: -40%; left: -15%;
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(0,0,0,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, transparent 70%);
   pointer-events: none;
 }
-.balance-label { font-size: 14px; font-weight: 500; opacity: 0.8; margin-bottom: 8px; }
-.balance-amount {
-  font-size: 52px; font-weight: 800; letter-spacing: -2px;
-  margin-bottom: 4px; position: relative;
-}
-.balance-currency { font-size: 14px; font-weight: 500; opacity: 0.7; }
-.balance-actions { margin-top: 24px; display: flex; gap: 12px; position: relative; }
+.balance-label { font-size: 0.9em; font-weight: 500; opacity: 0.85; margin-bottom: 8px; }
+.balance-amount { font-size: 3.2em; font-weight: 800; letter-spacing: -2px; margin-bottom: 4px; position: relative; }
+.balance-currency { font-size: 0.85em; font-weight: 500; opacity: 0.7; }
+.balance-actions { margin-top: 24px; display: flex; gap: 12px; position: relative; flex-wrap: wrap; }
 .balance-btn {
   padding: 12px 24px; border-radius: 12px; border: none;
-  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-size: 0.85em; font-weight: 600; cursor: pointer;
   background: rgba(255,255,255,0.2); color: white;
   backdrop-filter: blur(10px); transition: all 0.2s;
-  font-family: inherit;
+  font-family: inherit; display: flex; align-items: center; gap: 8px;
 }
 .balance-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 .balance-btn.solid { background: white; color: var(--primary-dark); }
 .balance-btn.solid:hover { background: #f0f0f0; }
 
-/* Stats Grid */
+/* Stats */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
-
 .stat-card {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  transition: all 0.3s;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-color: var(--primary); }
+.stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.stat-label { font-size: 0.8em; color: var(--text-muted); font-weight: 500; }
+.stat-icon { font-size: 1.5em; }
+.stat-value { font-size: 1.8em; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+.stat-sub { font-size: 0.75em; color: var(--text-dim); }
+.stat-sub.positive { color: var(--success); }
+
+/* Action buttons */
+.actions-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.btn-action {
+  flex: 1; min-width: 200px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9em;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: inherit;
+}
+.btn-action:hover { border-color: var(--primary); background: rgba(102,126,234,0.08); transform: translateY(-2px); }
+.btn-action.primary { background: var(--gradient); border: none; color: white; box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+.btn-action.primary:hover { box-shadow: 0 8px 30px rgba(102,126,234,0.4); }
+.btn-action.accent { background: var(--gradient-2); border: none; color: white; box-shadow: 0 4px 20px rgba(0,210,255,0.3); }
+
+/* Cards */
+.card {
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 22px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.stat-card:hover { transform: translateY(-4px); border-color: var(--primary-light); box-shadow: 0 12px 40px rgba(108, 92, 231, 0.15); }
-.stat-icon { font-size: 28px; margin-bottom: 12px; }
-.stat-value { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
-.stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* Payment Section */
-.payment-section {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px;
-  margin-bottom: 24px;
-}
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.section-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-.section-badge { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-
-/* Payment Form */
-.payment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.payment-grid.full { grid-template-columns: 1fr; }
-
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.form-input, .form-select {
-  padding: 14px 18px;
-  background: var(--bg-2);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  font-size: 14px; color: var(--text);
-  font-family: inherit; font-weight: 500;
-  transition: all 0.2s;
-}
-.form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(108,92,231,0.1); }
-.form-input::placeholder { color: var(--text-dim); }
-.form-input.amount-input { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; padding: 18px; }
-.form-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
-
-/* Operator selector */
-.operator-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.operator-option {
-  padding: 16px 12px; border-radius: 12px; text-align: center;
-  border: 2px solid var(--border-light); cursor: pointer;
-  transition: all 0.2s; background: var(--bg-2);
-}
-.operator-option:hover { border-color: var(--primary); }
-.operator-option.selected { border-color: var(--primary); background: rgba(108,92,231,0.1); box-shadow: 0 0 0 3px rgba(108,92,231,0.1); }
-.operator-name { font-size: 13px; font-weight: 700; margin-top: 6px; }
-.operator-icon { font-size: 28px; }
-
-/* Chart */
-.chart-section { margin-bottom: 24px; }
-.chart-container { height: 200px; }
-
-/* Table */
-.table-section {
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
   padding: 28px;
   margin-bottom: 24px;
 }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.card-title { font-size: 1.1em; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.card-badge { background: rgba(102,126,234,0.15); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7em; font-weight: 700; }
 
+/* Grid 2 columns */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+
+/* Chart */
+.chart-container { height: 220px; }
+
+/* Table */
 .table-wrap { overflow-x: auto; border-radius: 12px; }
 .table { width: 100%; border-collapse: collapse; }
-.table th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); background: var(--bg-2); }
-.table td { padding: 14px 16px; border-bottom: 1px solid var(--border-light); font-size: 13px; font-weight: 500; }
+.table th { padding: 12px 16px; text-align: left; font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); background: var(--bg-2); }
+.table td { padding: 14px 16px; border-bottom: 1px solid var(--border-light); font-size: 0.85em; font-weight: 500; }
 .table tr:last-child td { border-bottom: none; }
 .table tr:hover td { background: var(--surface-2); }
-.table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); }
 
-.badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.badge-pending { background: var(--warning-bg); color: var(--warning); }
-.badge-completed { background: var(--success-bg); color: var(--success); }
-.badge-approved { background: rgba(108,92,231,0.15); color: var(--primary-light); }
-.badge-rejected { background: var(--danger-bg); color: var(--danger); }
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 600; }
+.badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge-failed { background: rgba(239,68,68,0.15); color: var(--error); }
 
 .amount { font-weight: 700; font-variant-numeric: tabular-nums; }
 .amount-green { color: var(--success); }
 
-/* Alert */
-.alert {
-  padding: 14px 20px; border-radius: 12px; margin-bottom: 16px;
-  font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px;
-  animation: slideDown 0.3s ease-out;
-  border: 1px solid;
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.75em; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.form-input, .form-select {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.9em; color: var(--text);
+  font-family: inherit; font-weight: 500;
+  transition: all 0.2s;
 }
-.alert-success { background: var(--success-bg); border-color: rgba(0,184,148,0.3); color: var(--success); }
-.alert-error { background: var(--danger-bg); border-color: rgba(255,107,107,0.3); color: var(--danger); }
-@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102,126,234,0.1); }
+.form-input::placeholder { color: var(--text-dim); }
+.form-input.big { font-size: 1.5em; font-weight: 700; padding: 18px; }
+.form-hint { font-size: 0.7em; color: var(--text-dim); margin-top: 4px; }
 
-/* Empty */
+/* Operator selector */
+.operator-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.operator-option {
+  padding: 14px 10px; border-radius: 12px; text-align: center;
+  border: 2px solid var(--border); cursor: pointer;
+  transition: all 0.2s; background: var(--bg-2);
+}
+.operator-option:hover { border-color: var(--primary); }
+.operator-option.selected { border-color: var(--primary); background: rgba(102,126,234,0.1); box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+.operator-name { font-size: 0.8em; font-weight: 700; margin-top: 4px; }
+.operator-icon { font-size: 1.5em; }
+
+/* Buttons */
+.btn {
+  padding: 12px 24px; border: none; border-radius: 12px;
+  font-size: 0.85em; font-weight: 600; cursor: pointer;
+  transition: all 0.25s; font-family: inherit; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 16px rgba(102,126,234,0.3); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(102,126,234,0.4); }
+.btn-accent { background: var(--gradient-2); color: white; box-shadow: 0 4px 16px rgba(0,210,255,0.3); }
+.btn-accent:hover { transform: translateY(-2px); }
+.btn-ghost { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface); color: var(--text); }
+.btn-lg { padding: 16px 32px; font-size: 1em; border-radius: 14px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* Modal */
+.modal {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); z-index: 1000;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal.active { display: flex; }
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 36px;
+  max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+}
+.modal-title { font-size: 1.4em; font-weight: 800; margin-bottom: 6px; }
+.modal-subtitle { color: var(--text-muted); font-size: 0.9em; margin-bottom: 24px; }
+.modal-footer { display: flex; gap: 12px; margin-top: 24px; }
+
+/* Empty state */
 .empty { text-align: center; padding: 48px 20px; }
-.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-.empty-text { font-size: 14px; color: var(--text-dim); }
+.empty-icon { font-size: 3em; margin-bottom: 12px; opacity: 0.5; }
+.empty-text { font-size: 0.9em; color: var(--text-dim); }
 
-/* Copy button */
-.copy-btn { background: var(--surface-2); border: 1px solid var(--border-light); color: var(--text-muted); padding: 8px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-.copy-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+/* Shopify install section */
+.install-code {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.install-code code { font-size: 0.75em; color: var(--accent); word-break: break-all; }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
 @media (max-width: 768px) {
-  .container { padding: 16px 12px; }
-  .header { flex-direction: column; gap: 12px; padding: 16px; }
+  .header { padding: 12px 16px; flex-direction: column; gap: 12px; }
+  .main { padding: 16px 12px; }
   .stats-grid { grid-template-columns: 1fr; }
-  .payment-grid { grid-template-columns: 1fr; }
+  .actions-row { flex-direction: column; }
+  .balance-amount { font-size: 2.2em; }
+  .balance-hero { padding: 24px; }
   .operator-grid { grid-template-columns: 1fr; }
-  .balance-amount { font-size: 36px; }
-  .balance-hero { padding: 28px; }
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">
-      <div class="logo-mark">💳</div>
-      <div>
-        <div class="logo-text">BeninPay</div>
-        <div class="logo-sub">Paiements Mobile Money</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="shop-badge" id="shopBadge">Chargement...</div>
-      <button class="btn btn-ghost" onclick="location.reload()">Actualiser</button>
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">
+    <div class="icon">💳</div>
+    <div>
+      <div class="name">BeninPay</div>
+      <div class="subtitle">Dashboard Marchand</div>
     </div>
   </div>
+  <div class="header-right">
+    <span class="plan-badge" id="planBadge">Plan Basic</span>
+    <span class="shop-badge" id="shopBadge">Chargement...</span>
+    <button class="btn-logout" onclick="location.reload()">↻ Actualiser</button>
+  </div>
+</div>
 
+<div class="main">
   <div id="alertContainer"></div>
 
   <!-- Balance Hero -->
   <div class="balance-hero">
-    <div class="balance-label">Solde Disponible</div>
-    <div class="balance-amount" id="balance">0</div>
-    <div class="balance-currency">FCFA</div>
+    <div class="balance-label">💰 Solde Disponible</div>
+    <div class="balance-amount" id="balance">0 XOF</div>
+    <div class="balance-currency">Franc CFA (FCFA)</div>
     <div class="balance-actions">
-      <button class="balance-btn solid" onclick="scrollToWithdraw()">Retirer mon argent</button>
-      <button class="balance-btn" onclick="scrollToPayment()">Creer un paiement</button>
+      <button class="balance-btn solid" onclick="openWithdrawModal()">💸 Retirer mon argent</button>
+      <button class="balance-btn" onclick="openPaymentModal()">🔗 Créer un paiement</button>
+      <button class="balance-btn" onclick="scrollTo('ordersSection')">🛒 Mes commandes</button>
     </div>
   </div>
 
   <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-value" id="totalEarned">0</div>
-      <div class="stat-label">Total gagne</div>
+      <div class="stat-header">
+        <span class="stat-label">Total Gagné</span>
+        <span class="stat-icon">💵</span>
+      </div>
+      <div class="stat-value" id="totalEarned">0 XOF</div>
+      <div class="stat-sub positive">Chiffre d'affaires total</div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">📤</div>
-      <div class="stat-value" id="totalWithdrawn">0</div>
-      <div class="stat-label">Total retire</div>
+      <div class="stat-header">
+        <span class="stat-label">Total Retiré</span>
+        <span class="stat-icon">📤</span>
+      </div>
+      <div class="stat-value" id="totalWithdrawn">0 XOF</div>
+      <div class="stat-sub">Envoyé sur Mobile Money</div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">✅</div>
+      <div class="stat-header">
+        <span class="stat-label">Transactions</span>
+        <span class="stat-icon">📊</span>
+      </div>
       <div class="stat-value" id="totalTx">0</div>
-      <div class="stat-label">Transactions</div>
+      <div class="stat-sub positive" id="txChange">Ce mois</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-label">Plan Actuel</span>
+        <span class="stat-icon">⭐</span>
+      </div>
+      <div class="stat-value" id="planName" style="font-size:1.4em;">Basic</div>
+      <div class="stat-sub" id="planLimit">100 tx/mois</div>
     </div>
   </div>
 
-  <!-- Create Payment -->
-  <div class="payment-section" id="paymentSection">
-    <div class="section-header">
-      <div class="section-title">🔗 Creer un Lien de Paiement</div>
-      <span class="section-badge">Nouveau</span>
-    </div>
-    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;">Generez un lien de paiement Mobile Money a envoyer a votre client par WhatsApp, SMS ou email.</p>
-    <div class="payment-grid">
-      <div class="form-group">
-        <label class="form-label">Montant (FCFA)</label>
-        <input type="number" class="form-input amount-input" id="payAmount" placeholder="5000" min="100">
-        <div class="form-hint">Minimum 100 FCFA</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Description / Commande</label>
-        <input type="text" class="form-input" id="payDescription" placeholder="Ex: Commande #123 - T-shirt">
-      </div>
-    </div>
-    <div class="payment-grid" style="margin-top:16px;">
-      <div class="form-group">
-        <label class="form-label">Nom du client (optionnel)</label>
-        <input type="text" class="form-input" id="payCustomerName" placeholder="Jean Koffi">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email du client (optionnel)</label>
-        <input type="text" class="form-input" id="payCustomerEmail" placeholder="jean@email.com">
-      </div>
-    </div>
-    <div style="margin-top:20px;display:flex;gap:12px;">
-      <button class="btn btn-accent btn-lg" onclick="createPaymentLink()">Generer le Lien de Paiement</button>
-    </div>
-    <div id="paymentResult" style="margin-top:20px;"></div>
+  <!-- Action Buttons -->
+  <div class="actions-row">
+    <button class="btn-action primary" onclick="openWithdrawModal()">💸 Demander un retrait</button>
+    <button class="btn-action accent" onclick="openPaymentModal()">➕ Créer un lien de paiement</button>
+    <button class="btn-action" onclick="scrollTo('shopifySection')">🏪 Installer sur Shopify</button>
   </div>
 
-  <!-- Withdraw Section -->
-  <div class="payment-section" id="withdrawSection">
-    <div class="section-header">
-      <div class="section-title">💸 Demander un Retrait</div>
-    </div>
-    <div class="payment-grid">
-      <div class="form-group">
-        <label class="form-label">Montant a retirer (FCFA)</label>
-        <input type="number" class="form-input amount-input" id="wdAmount" placeholder="10000" min="500">
-        <div class="form-hint">Solde disponible: <strong id="wdBalance">0</strong> FCFA</div>
+  <!-- Two columns: Chart + Recent -->
+  <div class="grid-2">
+    <!-- Revenue Chart -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📈 Revenus (7 jours)</div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Numero Mobile Money</label>
-        <input type="tel" class="form-input" id="wdPhone" placeholder="+229 97 12 34 56">
-      </div>
+      <div class="chart-container"><canvas id="revenueChart"></canvas></div>
     </div>
-    <div class="form-group" style="margin-top:16px;">
-      <label class="form-label">Operateur</label>
-      <div class="operator-grid">
-        <div class="operator-option" data-op="MTN" onclick="selectOperator(this)">
-          <div class="operator-icon">📱</div>
-          <div class="operator-name">MTN MoMo</div>
+
+    <!-- Quick Stats / Info -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">ℹ️ Informations</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-muted);font-size:0.85em;">Boutique</span>
+          <span style="font-weight:600;font-size:0.85em;" id="infoShop">—</span>
         </div>
-        <div class="operator-option" data-op="Moov" onclick="selectOperator(this)">
-          <div class="operator-icon">📲</div>
-          <div class="operator-name">Moov Money</div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-muted);font-size:0.85em;">Email</span>
+          <span style="font-weight:600;font-size:0.85em;" id="infoEmail">—</span>
         </div>
-        <div class="operator-option" data-op="Celtis" onclick="selectOperator(this)">
-          <div class="operator-icon">💵</div>
-          <div class="operator-name">Celtis Cash</div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-muted);font-size:0.85em;">Opérateur</span>
+          <span style="font-weight:600;font-size:0.85em;" id="infoOperator">—</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-muted);font-size:0.85em;">Commission</span>
+          <span style="font-weight:600;font-size:0.85em;color:var(--success);" id="infoCommission">1.8%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;">
+          <span style="color:var(--text-muted);font-size:0.85em;">Statut FedaPay</span>
+          <span style="font-weight:600;font-size:0.85em;color:var(--success);">✅ Connecté</span>
         </div>
       </div>
     </div>
-    <div style="margin-top:24px;">
-      <button class="btn btn-primary btn-lg" onclick="requestWithdrawal()" style="width:100%;">Demander le Retrait</button>
-    </div>
   </div>
 
-  <!-- Revenue Chart -->
-  <div class="payment-section chart-section">
-    <div class="section-header">
-      <div class="section-title">📈 Mes Revenus</div>
-    </div>
-    <div class="chart-container"><canvas id="revenueChart"></canvas></div>
-  </div>
-
-  <!-- Orders / Commandes -->
-  <div class="table-section">
-    <div class="section-header">
-      <div class="section-title">🛒 Mes Commandes</div>
-      <button class="btn btn-ghost" onclick="loadOrders()" style="font-size:11px;">Actualiser</button>
+  <!-- Orders -->
+  <div class="card" id="ordersSection">
+    <div class="card-header">
+      <div class="card-title">🛒 Commandes Récentes <span class="card-badge" id="orderCount">0</span></div>
+      <button class="btn btn-ghost" onclick="loadOrders()">Actualiser</button>
     </div>
     <div class="table-wrap" id="ordersTable">
-      <div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Aucune commande</div></div>
-    </div>
-  </div>
-
-  <!-- Bouton Shopify Installation -->
-  <div class="payment-section">
-    <div class="section-header">
-      <div class="section-title">🏪 Bouton sur ma Boutique Shopify</div>
-      <span class="section-badge">Integration</span>
-    </div>
-    <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">
-      Ajoutez le bouton "Payer avec Mobile Money" sur la page panier de votre boutique. Vos clients pourront payer tous leurs articles d'un coup via Mobile Money!
-    </p>
-    <div style="background:var(--bg-2);border-radius:12px;padding:16px;margin-bottom:16px;">
-      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;font-weight:600;">CODE A COPIER DANS VOTRE THEME SHOPIFY:</div>
-      <code style="font-size:12px;color:var(--accent);word-break:break-all;" id="scriptCode"></code>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-accent" onclick="copyScript()">Copier le code</button>
-      <button class="btn btn-ghost" onclick="showInstallGuide()">Guide d'installation</button>
-    </div>
-    <div id="installGuide" style="display:none;margin-top:16px;background:var(--bg-2);border-radius:12px;padding:16px;font-size:12px;color:var(--text-muted);line-height:1.8;">
-      <strong style="color:var(--text);">Installation en 3 etapes:</strong><br>
-      1. Allez dans votre admin Shopify > Boutique en ligne > Themes > Actions > Modifier le code<br>
-      2. Ouvrez le fichier <code>theme.liquid</code> (dans Layout)<br>
-      3. Collez le code juste avant <code>&lt;/body&gt;</code><br><br>
-      <strong style="color:var(--accent);">Le bouton apparaitra automatiquement sur la page Panier (/cart).</strong><br>
-      Le client ajoute ses produits au panier, puis clique "Payer avec Mobile Money" pour payer le total avec MTN, Moov ou Celtis.
-    </div>
-  </div>
-
-  <!-- Withdrawals History -->
-  <div class="table-section">
-    <div class="section-header">
-      <div class="section-title">📋 Mes Retraits</div>
-    </div>
-    <div class="table-wrap" id="withdrawalsTable">
-      <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Aucun retrait pour le moment</div></div>
+      <div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Aucune commande pour le moment<br><small>Les commandes de vos clients apparaîtront ici</small></div></div>
     </div>
   </div>
 
   <!-- Transactions -->
-  <div class="table-section">
-    <div class="section-header">
-      <div class="section-title">💳 Mes Transactions</div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💳 Transactions</div>
+      <button class="btn btn-ghost" onclick="exportCSV()">📥 Exporter CSV</button>
     </div>
     <div class="table-wrap" id="transactionsTable">
       <div class="empty"><div class="empty-icon">💳</div><div class="empty-text">Aucune transaction</div></div>
     </div>
   </div>
+
+  <!-- Withdrawals -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📋 Historique Retraits</div>
+    </div>
+    <div class="table-wrap" id="withdrawalsTable">
+      <div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Aucun retrait demandé</div></div>
+    </div>
+  </div>
+
+  <!-- Shopify Integration -->
+  <div class="card" id="shopifySection">
+    <div class="card-header">
+      <div class="card-title">🏪 Bouton Paiement sur Shopify</div>
+      <span class="card-badge">Intégration</span>
+    </div>
+    <p style="color:var(--text-muted);font-size:0.85em;margin-bottom:16px;line-height:1.6;">
+      Ajoutez le bouton "Payer avec Mobile Money" sur la page panier de votre boutique Shopify.
+      Vos clients pourront payer tous les articles de leur panier via MTN, Moov ou Celtis!
+    </p>
+    <div class="install-code">
+      <div style="font-size:0.7em;color:var(--text-dim);margin-bottom:8px;font-weight:600;">CODE À COPIER DANS VOTRE THÈME:</div>
+      <code id="scriptCode"></code>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-accent" onclick="copyScript()">📋 Copier le code</button>
+      <button class="btn btn-ghost" onclick="toggleGuide()">📖 Guide d'installation</button>
+    </div>
+    <div id="installGuide" style="display:none;margin-top:16px;background:var(--bg-2);border-radius:12px;padding:16px;font-size:0.8em;color:var(--text-muted);line-height:1.9;">
+      <strong style="color:var(--text);">Installation en 3 étapes:</strong><br>
+      1️⃣ Admin Shopify → Boutique en ligne → Thèmes → Actions → Modifier le code<br>
+      2️⃣ Ouvrir le fichier <code style="color:var(--accent);">theme.liquid</code> (dans Layout)<br>
+      3️⃣ Coller le code juste avant <code style="color:var(--accent);">&lt;/body&gt;</code><br><br>
+      <strong style="color:var(--success);">✅ Le bouton apparaît automatiquement sur la page Panier (/cart).</strong><br>
+      Le client ajoute ses produits puis clique "Payer avec Mobile Money" pour payer le total.
+    </div>
+  </div>
+</div>
+
+<!-- Modal Retrait -->
+<div class="modal" id="withdrawModal">
+  <div class="modal-content">
+    <div class="modal-title">💸 Demander un retrait</div>
+    <div class="modal-subtitle">Recevez vos fonds sur votre Mobile Money (délai: 24-72h)</div>
+
+    <div class="form-group">
+      <label class="form-label">Solde disponible</label>
+      <input type="text" class="form-input big" id="wdAvailable" disabled style="color:var(--success);">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Montant à retirer (XOF)</label>
+      <input type="number" class="form-input big" id="wdAmount" placeholder="10000" min="500">
+      <div class="form-hint">Minimum: 500 XOF</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Numéro Mobile Money</label>
+      <input type="tel" class="form-input" id="wdPhone" placeholder="+229 97 XX XX XX">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Opérateur</label>
+      <div class="operator-grid">
+        <div class="operator-option" data-op="MTN" onclick="selectOp(this)">
+          <div class="operator-icon">📱</div>
+          <div class="operator-name">MTN MoMo</div>
+        </div>
+        <div class="operator-option" data-op="Moov" onclick="selectOp(this)">
+          <div class="operator-icon">📲</div>
+          <div class="operator-name">Moov Money</div>
+        </div>
+        <div class="operator-option" data-op="Celtis" onclick="selectOp(this)">
+          <div class="operator-icon">💵</div>
+          <div class="operator-name">Celtis Cash</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('withdrawModal')">Annuler</button>
+      <button class="btn btn-primary btn-lg" onclick="submitWithdraw()" style="flex:1;">Confirmer le retrait</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Créer Paiement -->
+<div class="modal" id="paymentModal">
+  <div class="modal-content">
+    <div class="modal-title">🔗 Créer un Lien de Paiement</div>
+    <div class="modal-subtitle">Envoyez ce lien par WhatsApp, SMS ou email à votre client</div>
+
+    <div class="form-group">
+      <label class="form-label">Montant (XOF)</label>
+      <input type="number" class="form-input big" id="payAmount" placeholder="5000" min="100">
+      <div class="form-hint">Minimum: 100 XOF</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description / Commande</label>
+      <input type="text" class="form-input" id="payDescription" placeholder="Ex: Commande #123 - T-shirt">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nom du client (optionnel)</label>
+      <input type="text" class="form-input" id="payName" placeholder="Jean Koffi">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email client (optionnel)</label>
+      <input type="email" class="form-input" id="payEmail" placeholder="jean@email.com">
+    </div>
+    <div id="payResult"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('paymentModal')">Fermer</button>
+      <button class="btn btn-accent btn-lg" onclick="createPayment()" style="flex:1;">Générer le lien</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const API_URL = window.location.origin;
-const urlParams = new URLSearchParams(window.location.search);
-const shop = urlParams.get('shop') || 'demo.myshopify.com';
+const API = window.location.origin;
+const params = new URLSearchParams(window.location.search);
+const shop = params.get('shop') || 'demo.myshopify.com';
 let selectedOperator = null;
 let merchantBalance = 0;
+
+// Init
+document.getElementById('shopBadge').textContent = shop.replace('.myshopify.com', '');
+document.getElementById('infoShop').textContent = shop;
+updateScriptCode();
+loadDashboard();
+loadOrders();
+setInterval(loadDashboard, 30000);
 
 function showAlert(msg, type = 'success') {
   const c = document.getElementById('alertContainer');
   const el = document.createElement('div');
-  el.className = `alert alert-${type}`;
+  el.className = `alert-bar alert-${type}`;
   el.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span> ${msg}`;
   c.appendChild(el);
   setTimeout(() => el.remove(), 5000);
 }
 
-function selectOperator(el) {
-  document.querySelectorAll('.operator-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedOperator = el.dataset.op;
-}
+function scrollTo(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
-function scrollToWithdraw() { document.getElementById('withdrawSection').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-function scrollToPayment() { document.getElementById('paymentSection').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-
+// Load Dashboard
 async function loadDashboard() {
   try {
-    const res = await fetch(`${API_URL}/merchant/dashboard?shop=${shop}`);
+    const res = await fetch(`${API}/merchant/dashboard?shop=${shop}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
     const m = data.merchant;
     merchantBalance = m.balance || 0;
 
-    document.getElementById('shopBadge').textContent = m.shop_domain;
-    document.getElementById('balance').textContent = merchantBalance.toLocaleString('fr-FR');
-    document.getElementById('totalEarned').textContent = (m.total_earned || 0).toLocaleString('fr-FR');
-    document.getElementById('totalWithdrawn').textContent = (m.total_withdrawn || 0).toLocaleString('fr-FR');
+    document.getElementById('balance').textContent = fmt(merchantBalance) + ' XOF';
+    document.getElementById('totalEarned').textContent = fmt(m.total_earned || 0) + ' XOF';
+    document.getElementById('totalWithdrawn').textContent = fmt(m.total_withdrawn || 0) + ' XOF';
     document.getElementById('totalTx').textContent = data.stats.total_transactions || 0;
-    document.getElementById('wdBalance').textContent = merchantBalance.toLocaleString('fr-FR');
 
+    // Info panel
+    document.getElementById('infoEmail').textContent = m.email || '—';
+    document.getElementById('infoOperator').textContent = m.mobile_money_operator || '—';
+
+    // Plan
+    const plans = { free: { name: 'Free', limit: '10 tx/mois', commission: '2.5%' }, basic: { name: 'Basic', limit: '100 tx/mois', commission: '1.8%' }, premium: { name: 'Premium', limit: 'Illimité', commission: '1.2%' } };
+    const plan = plans[m.plan] || plans.basic;
+    document.getElementById('planBadge').textContent = `Plan ${plan.name}`;
+    document.getElementById('planName').textContent = plan.name;
+    document.getElementById('planLimit').textContent = plan.limit;
+    document.getElementById('infoCommission').textContent = plan.commission;
+
+    // Tables
     displayWithdrawals(data.pending_withdrawals || []);
     displayTransactions(data.recent_transactions || []);
     loadChart(data.recent_transactions || []);
-  } catch (error) {
-    showAlert('Erreur: ' + error.message, 'error');
+  } catch (e) {
+    console.log('Dashboard load:', e.message);
   }
 }
 
@@ -530,26 +656,26 @@ function loadChart(transactions) {
   const last7 = {};
   for (let i = 6; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    const key = d.toISOString().split('T')[0];
-    last7[key] = 0;
+    last7[d.toISOString().split('T')[0]] = 0;
   }
   transactions.filter(t => t.status === 'completed').forEach(t => {
     const key = t.created_at?.split('T')[0];
     if (last7[key] !== undefined) last7[key] += (t.merchant_amount || 0);
   });
 
-  const ctx = document.getElementById('revenueChart');
-  new Chart(ctx, {
+  const canvas = document.getElementById('revenueChart');
+  if (canvas._chart) canvas._chart.destroy();
+  canvas._chart = new Chart(canvas, {
     type: 'line',
     data: {
       labels: Object.keys(last7).map(d => d.slice(5)),
       datasets: [{
-        label: 'Revenus (FCFA)',
+        label: 'Revenus (XOF)',
         data: Object.values(last7),
-        borderColor: '#6c5ce7',
-        backgroundColor: 'rgba(108,92,231,0.1)',
+        borderColor: '#667eea',
+        backgroundColor: 'rgba(102,126,234,0.1)',
         fill: true, tension: 0.4, borderWidth: 2.5,
-        pointBackgroundColor: '#6c5ce7',
+        pointBackgroundColor: '#667eea',
         pointRadius: 4, pointHoverRadius: 6
       }]
     },
@@ -557,174 +683,167 @@ function loadChart(transactions) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { color: '#6c6c9e', font: { size: 11 } }, grid: { display: false } },
-        y: { ticks: { color: '#6c6c9e', font: { size: 11 } }, grid: { color: 'rgba(108,92,231,0.08)' } }
+        x: { ticks: { color: '#6c6c8e', font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: '#6c6c8e', font: { size: 11 } }, grid: { color: 'rgba(102,126,234,0.08)' } }
       }
     }
   });
 }
 
+// Orders
+async function loadOrders() {
+  try {
+    const res = await fetch(`${API}/api/checkout/orders?shop=${shop}`);
+    const data = await res.json();
+    const orders = data.orders || [];
+    document.getElementById('orderCount').textContent = orders.length;
+    displayOrders(orders);
+  } catch (e) { console.log('Orders:', e.message); }
+}
+
+function displayOrders(items) {
+  const c = document.getElementById('ordersTable');
+  if (!items.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Aucune commande<br><small>Les commandes apparaîtront ici quand vos clients payeront</small></div></div>'; return; }
+  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Produit</th><th>Client</th><th>Montant</th><th>Statut</th></tr></thead><tbody>${items.map(o => `<tr>
+    <td>${new Date(o.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+    <td>${o.product_title||'Panier'}</td>
+    <td>${o.customer_name||'Client'}</td>
+    <td class="amount">${fmt(o.amount)} F</td>
+    <td><span class="badge badge-${o.status==='paid'?'success':'pending'}">${o.status==='paid'?'Payé':'En attente'}</span></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
 function displayWithdrawals(items) {
   const c = document.getElementById('withdrawalsTable');
   if (!items.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Aucun retrait</div></div>'; return; }
-  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Montant</th><th>Operateur</th><th>Numero</th><th>Statut</th></tr></thead><tbody>${items.map(w => `<tr>
-    <td>${new Date(w.requested_at).toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})}</td>
-    <td class="amount">${(w.amount||0).toLocaleString()} F</td>
+  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Montant</th><th>Opérateur</th><th>Numéro</th><th>Statut</th></tr></thead><tbody>${items.map(w => `<tr>
+    <td>${new Date(w.requested_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</td>
+    <td class="amount">${fmt(w.amount)} F</td>
     <td>${w.mobile_money_operator}</td>
-    <td class="mono">${w.mobile_money_number}</td>
-    <td><span class="badge badge-${w.status}">${statusLabel(w.status)}</span></td>
+    <td style="font-family:monospace;font-size:0.8em;color:var(--text-muted);">${w.mobile_money_number}</td>
+    <td><span class="badge badge-${w.status==='approved'?'success':w.status==='rejected'?'failed':'pending'}">${statusLabel(w.status)}</span></td>
   </tr>`).join('')}</tbody></table>`;
 }
 
 function displayTransactions(items) {
   const c = document.getElementById('transactionsTable');
   if (!items.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">💳</div><div class="empty-text">Aucune transaction</div></div>'; return; }
-  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Commande</th><th>Montant</th><th>Ma Part</th><th>Statut</th></tr></thead><tbody>${items.map(t => `<tr>
-    <td>${new Date(t.created_at).toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})}</td>
-    <td class="mono">#${t.order_id||t.id}</td>
-    <td class="amount">${(t.amount||0).toLocaleString()} F</td>
-    <td class="amount amount-green">+${(t.merchant_amount||0).toLocaleString()} F</td>
-    <td><span class="badge badge-${t.status}">${statusLabel(t.status)}</span></td>
+  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Réf.</th><th>Montant</th><th>Ma Part</th><th>Statut</th></tr></thead><tbody>${items.map(t => `<tr>
+    <td>${new Date(t.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</td>
+    <td style="font-family:monospace;font-size:0.8em;color:var(--text-muted);">#${t.order_id||t.id}</td>
+    <td class="amount">${fmt(t.amount)} F</td>
+    <td class="amount amount-green">+${fmt(t.merchant_amount||0)} F</td>
+    <td><span class="badge badge-${t.status==='completed'?'success':'pending'}">${statusLabel(t.status)}</span></td>
   </tr>`).join('')}</tbody></table>`;
 }
 
-function statusLabel(s) {
-  return { pending: 'En attente', completed: 'Complete', approved: 'Approuve', rejected: 'Rejete' }[s] || s;
+function statusLabel(s) { return {pending:'En attente',completed:'Complété',approved:'Approuvé',rejected:'Rejeté',paid:'Payé'}[s]||s; }
+function fmt(n) { return (n||0).toLocaleString('fr-FR'); }
+
+// Withdraw
+function openWithdrawModal() {
+  document.getElementById('withdrawModal').classList.add('active');
+  document.getElementById('wdAvailable').value = fmt(merchantBalance) + ' XOF';
 }
-
-async function createPaymentLink() {
-  const amount = parseInt(document.getElementById('payAmount').value);
-  const description = document.getElementById('payDescription').value;
-  const customerName = document.getElementById('payCustomerName').value;
-  const customerEmail = document.getElementById('payCustomerEmail').value;
-
-  if (!amount || amount < 100) { showAlert('Montant minimum 100 FCFA', 'error'); return; }
-
-  const resultDiv = document.getElementById('paymentResult');
-  resultDiv.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">Generation en cours...</div>';
-
-  try {
-    const res = await fetch(`${API_URL}/api/payment/initiate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount,
-        orderId: `${shop.split('.')[0]}-${Date.now()}`,
-        customerName: customerName || 'Client',
-        customerEmail: customerEmail || '',
-        description: description || `Paiement ${shop}`
-      })
-    });
-    const data = await res.json();
-
-    if (data.success && data.payment_url) {
-      resultDiv.innerHTML = `
-        <div style="background:var(--success-bg);border:1px solid rgba(0,184,148,0.3);border-radius:14px;padding:20px;margin-top:12px;">
-          <div style="font-weight:700;color:var(--success);margin-bottom:12px;">Lien de paiement cree!</div>
-          <div style="background:var(--bg-2);border-radius:10px;padding:14px;display:flex;align-items:center;gap:10px;">
-            <input type="text" value="${data.payment_url}" readonly style="flex:1;background:transparent;border:none;color:var(--text);font-size:12px;font-family:monospace;" id="payLink">
-            <button class="copy-btn" onclick="copyLink()">Copier</button>
-          </div>
-          <div style="margin-top:12px;font-size:12px;color:var(--text-muted);">
-            Envoyez ce lien a votre client par WhatsApp, SMS ou email. Il pourra payer avec MTN, Moov ou Celtis.
-          </div>
-          <div style="margin-top:12px;display:flex;gap:8px;">
-            <a href="https://wa.me/?text=Bonjour! Voici votre lien de paiement: ${encodeURIComponent(data.payment_url)}" target="_blank" class="btn btn-ghost" style="font-size:12px;">WhatsApp</a>
-            <a href="mailto:${customerEmail}?subject=Votre paiement - ${amount} FCFA&body=Bonjour ${customerName}, voici votre lien de paiement: ${data.payment_url}" target="_blank" class="btn btn-ghost" style="font-size:12px;">Email</a>
-          </div>
-        </div>`;
-    } else {
-      resultDiv.innerHTML = `<div style="background:var(--warning-bg);border:1px solid rgba(253,203,110,0.3);border-radius:14px;padding:20px;">
-        <div style="font-weight:600;color:var(--warning);">Paiement initie (mode redirect)</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Transaction #${data.transactionId} creee. Le client sera redirige vers FedaPay.</div>
-      </div>`;
-    }
-  } catch (e) {
-    resultDiv.innerHTML = `<div class="alert alert-error">Erreur: ${e.message}</div>`;
-  }
+function selectOp(el) {
+  document.querySelectorAll('.operator-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedOperator = el.dataset.op;
 }
-
-function copyLink() {
-  const input = document.getElementById('payLink');
-  input.select();
-  document.execCommand('copy');
-  showAlert('Lien copie!');
-}
-
-async function requestWithdrawal() {
+async function submitWithdraw() {
   const amount = parseInt(document.getElementById('wdAmount').value);
   const phone = document.getElementById('wdPhone').value;
-
-  if (!amount || amount < 500) { showAlert('Montant minimum 500 FCFA', 'error'); return; }
+  if (!amount || amount < 500) { showAlert('Montant minimum 500 XOF', 'error'); return; }
   if (amount > merchantBalance) { showAlert('Solde insuffisant', 'error'); return; }
-  if (!selectedOperator) { showAlert('Selectionnez un operateur', 'error'); return; }
-  if (!phone) { showAlert('Numero de telephone requis', 'error'); return; }
+  if (!selectedOperator) { showAlert('Sélectionnez un opérateur', 'error'); return; }
+  if (!phone) { showAlert('Numéro requis', 'error'); return; }
 
   try {
-    const res = await fetch(`${API_URL}/merchant/withdrawal/request?shop=${shop}`, {
+    const res = await fetch(`${API}/merchant/withdrawal/request?shop=${shop}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount, mobile_money_operator: selectedOperator, mobile_money_number: phone })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
-
-    showAlert('Demande de retrait envoyee! En attente de validation.');
+    showAlert('Demande de retrait envoyée! Vous recevrez vos fonds dans 24-72h.');
+    closeModal('withdrawModal');
     document.getElementById('wdAmount').value = '';
     document.getElementById('wdPhone').value = '';
-    document.querySelectorAll('.operator-option').forEach(o => o.classList.remove('selected'));
-    selectedOperator = null;
     setTimeout(() => loadDashboard(), 1000);
   } catch (e) { showAlert(e.message, 'error'); }
 }
 
-// Orders
-async function loadOrders() {
+// Create Payment
+function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
+async function createPayment() {
+  const amount = parseInt(document.getElementById('payAmount').value);
+  const description = document.getElementById('payDescription').value;
+  const name = document.getElementById('payName').value;
+  const email = document.getElementById('payEmail').value;
+  if (!amount || amount < 100) { showAlert('Montant minimum 100 XOF', 'error'); return; }
+
+  const resultDiv = document.getElementById('payResult');
+  resultDiv.innerHTML = '<p style="color:var(--text-muted);font-size:0.85em;padding:10px 0;">Génération en cours...</p>';
+
   try {
-    const res = await fetch(`${API_URL}/api/checkout/orders?shop=${shop}`);
+    const res = await fetch(`${API}/api/payment/initiate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, orderId: `${shop.split('.')[0]}-${Date.now()}`, customerName: name||'Client', customerEmail: email||'', description: description||`Paiement ${shop}` })
+    });
     const data = await res.json();
-    displayOrders(data.orders || []);
-  } catch (e) { console.error('Orders error:', e); }
+    if (data.success && data.payment_url) {
+      resultDiv.innerHTML = `
+        <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px;margin-top:12px;">
+          <div style="font-weight:700;color:var(--success);margin-bottom:10px;">✅ Lien créé!</div>
+          <div style="background:var(--bg-2);border-radius:8px;padding:12px;display:flex;align-items:center;gap:8px;">
+            <input type="text" value="${data.payment_url}" readonly id="payLink" style="flex:1;background:transparent;border:none;color:var(--text);font-size:0.75em;font-family:monospace;outline:none;">
+            <button class="btn btn-ghost" onclick="copyPayLink()" style="font-size:0.75em;padding:6px 12px;">Copier</button>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <a href="https://wa.me/?text=Voici votre lien de paiement: ${encodeURIComponent(data.payment_url)}" target="_blank" class="btn btn-ghost" style="font-size:0.75em;">WhatsApp</a>
+            <a href="mailto:${email}?subject=Paiement ${amount} XOF&body=Voici votre lien: ${data.payment_url}" target="_blank" class="btn btn-ghost" style="font-size:0.75em;">Email</a>
+          </div>
+        </div>`;
+    } else {
+      resultDiv.innerHTML = `<div style="background:rgba(245,158,11,0.1);border-radius:12px;padding:14px;margin-top:12px;font-size:0.85em;color:var(--warning);">Transaction #${data.transactionId||'?'} créée (mode redirect FedaPay)</div>`;
+    }
+  } catch (e) { resultDiv.innerHTML = `<div class="alert-bar alert-error">Erreur: ${e.message}</div>`; }
+}
+function copyPayLink() {
+  document.getElementById('payLink').select();
+  document.execCommand('copy');
+  showAlert('Lien copié!');
 }
 
-function displayOrders(items) {
-  const c = document.getElementById('ordersTable');
-  if (!items.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Aucune commande</div></div>'; return; }
-  c.innerHTML = `<table class="table"><thead><tr><th>Date</th><th>Produit</th><th>Client</th><th>Montant</th><th>Statut</th></tr></thead><tbody>${items.map(o => `<tr>
-    <td>${new Date(o.created_at).toLocaleDateString('fr-FR', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</td>
-    <td>${o.product_title || 'Produit'}</td>
-    <td>${o.customer_name}</td>
-    <td class="amount">${(o.amount||0).toLocaleString()} F</td>
-    <td><span class="badge badge-${o.status === 'paid' ? 'completed' : 'pending'}">${o.status === 'paid' ? 'Paye' : 'En attente'}</span></td>
-  </tr>`).join('')}</tbody></table>`;
-}
+// Modal
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-// Script code for Shopify integration
+// Shopify script
 function updateScriptCode() {
-  const appUrl = window.location.origin;
-  const code = `<script src="${appUrl}/js/beninpay-button.js" data-shop="${shop}"><\/script>`;
+  const code = `<script src="${API}/js/beninpay-button.js" data-shop="${shop}"><\/script>`;
   document.getElementById('scriptCode').textContent = code;
 }
-
 function copyScript() {
   const code = document.getElementById('scriptCode').textContent;
-  navigator.clipboard.writeText(code).then(() => showAlert('Code copie!')).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = code; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    showAlert('Code copie!');
+  navigator.clipboard.writeText(code).then(() => showAlert('Code copié!')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = code; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showAlert('Code copié!');
   });
 }
+function toggleGuide() { const g = document.getElementById('installGuide'); g.style.display = g.style.display === 'none' ? 'block' : 'none'; }
 
-function showInstallGuide() {
-  const guide = document.getElementById('installGuide');
-  guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+// Export CSV
+async function exportCSV() {
+  try {
+    const res = await fetch(`${API}/export/transactions?shop=${shop}&format=csv`);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `beninpay-transactions-${shop}.csv`; a.click();
+    showAlert('Export CSV téléchargé!');
+  } catch (e) { showAlert('Erreur export: ' + e.message, 'error'); }
 }
-
-updateScriptCode();
-loadDashboard();
-loadOrders();
-setInterval(loadDashboard, 30000);
 </script>
 </body>
 </html>
