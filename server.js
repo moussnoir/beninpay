@@ -29,8 +29,9 @@ if (process.env.SENTRY_DSN) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-console.log('[BeninPay] Starting server...');
+console.log('[BeninPay] Starting server v2.1...');
 console.log('[BeninPay] Environment:', process.env.NODE_ENV || 'development');
+console.log('[BeninPay] Root / -> merchant-dashboard.html (always)');
 
 // Security middleware
 app.use(helmet({
