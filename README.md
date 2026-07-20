@@ -1,53 +1,50 @@
-# 🛍️ My Shopify App
+# BeninPay - Paiements Mobile Money pour Shopify
 
-Application Shopify construite avec **Remix** + **TypeScript**.
+Solution de paiement Mobile Money (MTN MoMo, Moov Money, Celtis Cash) pour les boutiques Shopify au Benin.
 
-## 🚀 Quick Start
+## Deploy
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/moussnoir/beninpay)
+
+## Features
+
+- Bouton "Payer avec Mobile Money" sur la page panier Shopify
+- Integration FedaPay LIVE (MTN, Moov, Celtis)
+- Dashboard admin avec analytics et graphiques
+- Dashboard marchand moderne
+- Webhooks temps reel (FedaPay + Shopify)
+- Gestion des retraits marchands
+- Export CSV, notifications email
+- Rate limiting, securite Helmet, Sentry
+
+## Quick Start (dev)
 
 ```bash
-# 1. Installer les dépendances
 npm install
-
-# 2. Lancer le serveur de développement
-npm run dev
-
-# 3. Ouvrir dans le navigateur
-http://localhost:3000
+cp .env.example .env  # Configurer les cles
+node server.js
 ```
 
-## 📁 Structure
+## Variables d'environnement
 
-```
-my-shopify-app/
-├── app/
-│   ├── routes/
-│   │   └── _index.tsx      # Page d'accueil
-│   └── root.tsx             # Layout principal
-├── public/                  # Fichiers statiques
-├── package.json
-├── vite.config.ts          # Config Vite
-└── tsconfig.json           # Config TypeScript
+```env
+FEDAPAY_SECRET_KEY=sk_live_xxx
+SHOPIFY_API_KEY=xxx
+SHOPIFY_API_SECRET=shpss_xxx
+SHOPIFY_APP_URL=https://your-app.onrender.com
+ADMIN_PASSWORD=xxx
 ```
 
-## 🛠️ Commandes
+## Architecture
 
-- `npm run dev` - Démarrer le serveur dev
-- `npm run build` - Build production
-- `npm start` - Lancer en production
-- `npm run typecheck` - Vérifier TypeScript
+```
+server.js              # Serveur Express principal
+app/routes/            # API routes (merchant, admin, checkout, webhooks)
+app/services/          # FedaPay, notifications, CSV
+public/                # Dashboards HTML + bouton JS
+db/                    # JSON store (dev) / PostgreSQL (prod)
+```
 
-## 📚 Documentation
+## Commission
 
-- [Remix Docs](https://remix.run/docs)
-- [Shopify App Dev](https://shopify.dev/docs/apps)
-- [Shopify API](https://shopify.dev/docs/api/admin)
-
-## ✨ Features
-
-- ✅ Remix framework
-- ✅ TypeScript
-- ✅ Vite (ultra rapide)
-- ✅ Shopify API ready
-- ✅ Hot reload
-
-Créé avec ❤️ par Claude
+BeninPay prend 2% par transaction. Le marchand recoit 98%.
