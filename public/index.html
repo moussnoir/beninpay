@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BeninPay — Inscription & Tableau de bord</title>
+<script>
+// Redirect vers merchant dashboard si shop present dans l'URL
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var shop = params.get('shop');
+  if (shop) {
+    window.location.replace('/merchant-dashboard.html?shop=' + shop);
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>

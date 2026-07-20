@@ -46,13 +46,11 @@ app.use('/api/', apiLimiter);
 app.use('/api/payment/initiate', paymentLimiter);
 app.use('/webhooks/', webhookLimiter);
 
-// Route principale - redirige vers dashboard si shop est present
-app.get('/', (req, res, next) => {
+// Route principale - toujours rediriger vers le merchant dashboard
+app.get('/', (req, res) => {
   const shop = req.query.shop;
-  if (shop) {
-    return res.redirect(`/merchant-dashboard.html?shop=${shop}`);
-  }
-  next();
+  const params = shop ? `?shop=${shop}` : '';
+  return res.redirect(`/merchant-dashboard.html${params}`);
 });
 
 // Static files
