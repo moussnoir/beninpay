@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeninPay - Dashboard Marchand</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #667eea;
+  --primary-dark: #5568d3;
+  --secondary: #764ba2;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --bg: #0f0f1e;
+  --surface: #1a1a2e;
+  --border: #2d2d44;
+  --text: #ffffff;
+  --text-muted: #a0a0b8;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Onboarding */
+.onboarding {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.onboarding-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.onboarding-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.onboarding-logo h1 {
+  font-size: 2.5em;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.onboarding-logo p {
+  color: var(--text-muted);
+  font-size: 1.1em;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.plan-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.plan-card {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.plan-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.plan-card.selected {
+  border-color: var(--primary);
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.plan-card.recommended::before {
+  content: "⭐ Recommandé";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--success);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7em;
+  font-weight: 700;
+}
+
+.plan-name {
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-bottom: 8px;
+}
+
+.plan-price {
+  font-size: 1.8em;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.plan-price small {
+  font-size: 0.5em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.plan-features {
+  list-style: none;
+  margin-top: 12px;
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+
+.plan-features li {
+  margin: 6px 0;
+}
+
+.btn {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Inter', sans-serif;
+  margin-top: 24px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dashboard */
+.dashboard {
+  display: none;
+  min-height: 100vh;
+}
+
+.dashboard.active {
+  display: block;
+}
+
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5em;
+  font-weight: 800;
+}
+
+.header-logo .icon {
+  font-size: 1.3em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.shop-badge {
+  background: var(--bg);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+.main-content {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.stat-icon {
+  font-size: 1.8em;
+}
+
+.stat-value {
+  font-size: 2.5em;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.stat-change {
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-change.positive {
+  color: var(--success);
+}
+
+.stat-change.negative {
+  color: var(--error);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.btn-action {
+  flex: 1;
+  padding: 18px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-action:hover {
+  border-color: var(--primary);
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.btn-action.primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: var(--bg);
+}
+
+.table th,
+.table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table tr:hover {
+  background: var(--bg);
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+.badge-pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+}
+
+.badge-failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--error);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .icon {
+  font-size: 4em;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 1.8em;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  color: var(--text-muted);
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-footer .btn {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .plan-selector {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table {
+    font-size: 0.85em;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-card">
+    <div class="onboarding-logo">
+      <h1>🇧🇯 BeninPay</h1>
+      <p>Acceptez les paiements Mobile Money sur Shopify</p>
+    </div>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label>Nom de l'entreprise *</label>
+        <input type="text" id="businessName" placeholder="Ex: Ma Boutique SARL" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="email" placeholder="contact@maboutique.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone *</label>
+        <input type="tel" id="phone" placeholder="+229 97 XX XX XX" required>
+      </div>
+
+      <div class="form-group">
+        <label>Choisissez votre plan</label>
+        <div class="plan-selector">
+          <div class="plan-card" data-plan="free">
+            <div class="plan-name">Free</div>
+            <div class="plan-price">0<small>/mois</small></div>
+            <ul class="plan-features">
+              <li>10 tx/mois</li>
+              <li>2.5% commission</li>
+            </ul>
+          </div>
+
+          <div class="plan-card recommended selected" data-plan="basic">
+            <div class="plan-name">Basic</div>
+            <div class="plan-price">5K<small>/mois</small></div>
+            <ul class="plan-features">
+              <li>100 tx/mois</li>
+              <li>1.8% commission</li>
+            </ul>
+          </div>
+
+          <div class="plan-card" data-plan="premium">
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">25K<small>/mois</small></div>
+            <ul class="plan-features">
+              <li>Illimité</li>
+              <li>1.2% commission</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Opérateur Mobile Money (pour recevoir vos gains) *</label>
+        <select id="operator" required>
+          <option value="">Choisir...</option>
+          <optgroup label="🇧🇯 Bénin">
+            <option value="mtn">MTN Mobile Money</option>
+            <option value="moov">Moov Money</option>
+            <option value="celtis">Celtis Cash</option>
+          </optgroup>
+          <optgroup label="🇸🇳 Sénégal">
+            <option value="orange_sn">Orange Money</option>
+            <option value="free_sn">Free Money</option>
+            <option value="wave_sn">Wave Sénégal</option>
+          </optgroup>
+          <optgroup label="🇨🇮 Côte d'Ivoire">
+            <option value="mtn_ci">MTN Mobile Money</option>
+            <option value="orange_ci">Orange Money</option>
+            <option value="moov_ci">Moov Money</option>
+            <option value="wave_ci">Wave Côte d'Ivoire</option>
+          </optgroup>
+          <optgroup label="🇹🇬 Togo">
+            <option value="tmoney">T-Money (Togocom)</option>
+            <option value="flooz">Flooz (Moov)</option>
+          </optgroup>
+          <optgroup label="🇧🇫 Burkina Faso">
+            <option value="orange_bf">Orange Money</option>
+            <option value="moov_bf">Moov Money</option>
+          </optgroup>
+          <optgroup label="🇲🇱 Mali">
+            <option value="orange_ml">Orange Money</option>
+          </optgroup>
+          <optgroup label="🇳🇪 Niger">
+            <option value="orange_ne">Orange Money</option>
+          </optgroup>
+          <optgroup label="🇬🇳 Guinée">
+            <option value="mtn_gn">MTN Mobile Money</option>
+            <option value="orange_gn">Orange Money</option>
+          </optgroup>
+          <optgroup label="Autres">
+            <option value="paypal">PayPal</option>
+            <option value="bank">Virement Bancaire</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Numéro Mobile Money *</label>
+        <input type="tel" id="mobileMoneyNumber" placeholder="+229 XX XX XX XX" required>
+      </div>
+
+      <button type="submit" class="btn">
+        🚀 Créer mon compte BeninPay
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-logo">
+      <span class="icon">🇧🇯</span>
+      <span>BeninPay</span>
+    </div>
+    <div class="header-right">
+      <div class="shop-badge" id="shopName">Ma Boutique</div>
+      <button class="btn-secondary" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Solde Disponible</span>
+          <span class="stat-icon">💰</span>
+        </div>
+        <div class="stat-value" id="balance">0 XOF</div>
+        <div class="stat-change positive">
+          <span>↗</span>
+          <span>Disponible pour retrait</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Transactions ce mois</span>
+          <span class="stat-icon">📊</span>
+        </div>
+        <div class="stat-value" id="transactionsCount">0</div>
+        <div class="stat-change positive">
+          <span>↗</span>
+          <span id="transactionsChange">+0% ce mois</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Chiffre d'affaires total</span>
+          <span class="stat-icon">💵</span>
+        </div>
+        <div class="stat-value" id="totalRevenue">0 XOF</div>
+        <div class="stat-change positive">
+          <span>↗</span>
+          <span>Montant total des ventes</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-label">Plan Actuel</span>
+          <span class="stat-icon">⭐</span>
+        </div>
+        <div class="stat-value" style="font-size: 1.8em;" id="currentPlan">Basic</div>
+        <div class="stat-change">
+          <span>Limite: <span id="planLimit">100 tx/mois</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-action primary" onclick="openWithdrawModal()">
+        💸 Demander un retrait
+      </button>
+      <button class="btn-action" onclick="openCreatePaymentModal()">
+        ➕ Créer un paiement
+      </button>
+      <button class="btn-action" onclick="window.open('/checkout.html?amount=5000&orderId=TEST&shopName=Demo', '_blank')">
+        👁️ Voir démo checkout
+      </button>
+    </div>
+
+    <!-- Transactions -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">📋 Transactions Récentes</h2>
+        <button class="btn-secondary">Exporter</button>
+      </div>
+
+      <table class="table" id="transactionsTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Client</th>
+            <th>Statut</th>
+            <th>Votre Gain</th>
+          </tr>
+        </thead>
+        <tbody id="transactionsBody">
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="icon">📭</div>
+                <p>Aucune transaction pour le moment</p>
+                <p style="font-size: 0.9em; margin-top: 8px;">Créez votre premier lien de paiement!</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Withdrawals -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">💸 Historique des Retraits</h2>
+      </div>
+
+      <table class="table" id="withdrawalsTable">
+        <thead>
+          <tr>
+            <th>Date Demande</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Date Paiement</th>
+          </tr>
+        </thead>
+        <tbody id="withdrawalsBody">
+          <tr>
+            <td colspan="4">
+              <div class="empty-state">
+                <div class="icon">💳</div>
+                <p>Aucun retrait pour le moment</p>
+                <p style="font-size: 0.9em; margin-top: 8px;">Délai de traitement: 7 jours</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Retrait -->
+<div class="modal" id="withdrawModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">💸 Demander un retrait</h2>
+      <p class="modal-subtitle">Délai de traitement: 7 jours ouvrés</p>
+    </div>
+
+    <form id="withdrawForm">
+      <div class="form-group">
+        <label>Solde disponible</label>
+        <input type="text" id="availableBalance" disabled style="font-size: 1.5em; font-weight: 700;">
+      </div>
+
+      <div class="form-group">
+        <label>Montant à retirer (XOF) *</label>
+        <input type="number" id="withdrawAmount" placeholder="10000" required min="10000">
+        <small style="color: var(--text-muted); margin-top: 8px; display: block;">Minimum: 10,000 XOF</small>
+      </div>
+
+      <div class="form-group">
+        <label>Numéro Mobile Money</label>
+        <input type="tel" id="withdrawPhone" disabled>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeWithdrawModal()">Annuler</button>
+        <button type="submit" class="btn">Confirmer le retrait</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Create Payment -->
+<div class="modal" id="createPaymentModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">➕ Créer un paiement</h2>
+      <p class="modal-subtitle">Générez un lien de paiement pour votre client</p>
+    </div>
+
+    <form id="createPaymentForm">
+      <div class="form-group">
+        <label>Montant (XOF) *</label>
+        <input type="number" id="paymentAmount" placeholder="5000" required min="100">
+      </div>
+
+      <div class="form-group">
+        <label>Order ID / Référence *</label>
+        <input type="text" id="paymentOrderId" placeholder="ORDER-12345" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email client (optionnel)</label>
+        <input type="email" id="paymentEmail" placeholder="client@email.com">
+      </div>
+
+      <div class="form-group">
+        <label>Lien généré</label>
+        <input type="text" id="generatedLink" readonly style="background: var(--bg);">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeCreatePaymentModal()">Fermer</button>
+        <button type="button" class="btn" onclick="generatePaymentLink()">Générer le lien</button>
+        <button type="button" class="btn" onclick="copyPaymentLink()" id="copyBtn" style="display: none;">📋 Copier</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Global state
+let merchantData = null;
+let selectedPlan = 'basic';
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const shop = urlParams.get('shop');
+
+  if (shop) {
+    document.getElementById('shopName').textContent = shop;
+  }
+
+  // Check if merchant is registered
+  const registered = localStorage.getItem('beninpay_registered');
+  if (registered) {
+    merchantData = JSON.parse(localStorage.getItem('beninpay_merchant'));
+    showDashboard();
+    loadDashboardData();
+  }
+
+  setupEventListeners();
+});
+
+// Event Listeners
+function setupEventListeners() {
+  // Plan selector
+  document.querySelectorAll('.plan-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selectedPlan = card.dataset.plan;
+    });
+  });
+
+  // Register form
+  document.getElementById('registerForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleRegistration();
+  });
+
+  // Withdraw form
+  document.getElementById('withdrawForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleWithdraw();
+  });
+}
+
+// Registration
+function handleRegistration() {
+  const data = {
+    businessName: document.getElementById('businessName').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    plan: selectedPlan,
+    operator: document.getElementById('operator').value,
+    mobileMoneyNumber: document.getElementById('mobileMoneyNumber').value,
+    registeredAt: new Date().toISOString(),
+    balance: 0,
+    transactions: [],
+    withdrawals: []
+  };
+
+  // Save to localStorage (in real app, POST to API)
+  localStorage.setItem('beninpay_merchant', JSON.stringify(data));
+  localStorage.setItem('beninpay_registered', 'true');
+
+  merchantData = data;
+
+  // Show dashboard
+  showDashboard();
+  loadDashboardData();
+}
+
+function showDashboard() {
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('dashboard').classList.add('active');
+}
+
+// Load Dashboard Data
+function loadDashboardData() {
+  if (!merchantData) return;
+
+  // Update stats
+  document.getElementById('balance').textContent = formatMoney(merchantData.balance || 0);
+  document.getElementById('transactionsCount').textContent = merchantData.transactions?.length || 0;
+
+  // Calculate total revenue
+  const totalRevenue = merchantData.transactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+  document.getElementById('totalRevenue').textContent = formatMoney(totalRevenue);
+
+  // Current plan
+  const planNames = { free: 'Free', basic: 'Basic', premium: 'Premium' };
+  const planLimits = { free: '10 tx/mois', basic: '100 tx/mois', premium: 'Illimité' };
+  document.getElementById('currentPlan').textContent = planNames[merchantData.plan] || 'Basic';
+  document.getElementById('planLimit').textContent = planLimits[merchantData.plan] || '100 tx/mois';
+
+  // Load transactions
+  loadTransactions();
+  loadWithdrawals();
+}
+
+function loadTransactions() {
+  const tbody = document.getElementById('transactionsBody');
+
+  if (!merchantData.transactions || merchantData.transactions.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="empty-state">
+            <div class="icon">📭</div>
+            <p>Aucune transaction pour le moment</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = merchantData.transactions.map(tx => `
+    <tr>
+      <td>${formatDate(tx.date)}</td>
+      <td>${formatMoney(tx.amount)}</td>
+      <td>${tx.customerName || 'Client'}</td>
+      <td><span class="badge badge-${tx.status === 'success' ? 'success' : 'pending'}">${tx.status === 'success' ? 'Payé' : 'En cours'}</span></td>
+      <td>${formatMoney(tx.amount * 0.96)}</td>
+    </tr>
+  `).join('');
+}
+
+function loadWithdrawals() {
+  const tbody = document.getElementById('withdrawalsBody');
+
+  if (!merchantData.withdrawals || merchantData.withdrawals.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4">
+          <div class="empty-state">
+            <div class="icon">💳</div>
+            <p>Aucun retrait pour le moment</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = merchantData.withdrawals.map(w => `
+    <tr>
+      <td>${formatDate(w.requestDate)}</td>
+      <td>${formatMoney(w.amount)}</td>
+      <td><span class="badge badge-${w.status === 'paid' ? 'success' : 'pending'}">${w.status === 'paid' ? 'Payé' : 'En traitement'}</span></td>
+      <td>${w.paidDate ? formatDate(w.paidDate) : '7 jours'}</td>
+    </tr>
+  `).join('');
+}
+
+// Withdraw Modal
+function openWithdrawModal() {
+  document.getElementById('withdrawModal').classList.add('active');
+  document.getElementById('availableBalance').value = formatMoney(merchantData.balance || 0);
+  document.getElementById('withdrawPhone').value = merchantData.mobileMoneyNumber;
+}
+
+function closeWithdrawModal() {
+  document.getElementById('withdrawModal').classList.remove('active');
+}
+
+function handleWithdraw() {
+  const amount = parseInt(document.getElementById('withdrawAmount').value);
+
+  if (amount < 10000) {
+    alert('Montant minimum: 10,000 XOF');
+    return;
+  }
+
+  if (amount > merchantData.balance) {
+    alert('Solde insuffisant');
+    return;
+  }
+
+  // Create withdrawal request
+  const withdrawal = {
+    id: Date.now(),
+    amount: amount,
+    requestDate: new Date().toISOString(),
+    status: 'pending',
+    paidDate: null
+  };
+
+  merchantData.withdrawals = merchantData.withdrawals || [];
+  merchantData.withdrawals.unshift(withdrawal);
+  merchantData.balance -= amount;
+
+  // Save
+  localStorage.setItem('beninpay_merchant', JSON.stringify(merchantData));
+
+  // Reload
+  loadDashboardData();
+  closeWithdrawModal();
+
+  alert('✅ Demande de retrait enregistrée!\nVous recevrez votre paiement dans 7 jours ouvrés.');
+}
+
+// Create Payment Modal
+function openCreatePaymentModal() {
+  document.getElementById('createPaymentModal').classList.add('active');
+}
+
+function closeCreatePaymentModal() {
+  document.getElementById('createPaymentModal').classList.remove('active');
+}
+
+function generatePaymentLink() {
+  const amount = document.getElementById('paymentAmount').value;
+  const orderId = document.getElementById('paymentOrderId').value;
+
+  if (!amount || !orderId) {
+    alert('Montant et Order ID requis');
+    return;
+  }
+
+  const link = `${window.location.origin}/checkout.html?amount=${amount}&orderId=${orderId}&shopName=${encodeURIComponent(merchantData.businessName)}`;
+
+  document.getElementById('generatedLink').value = link;
+  document.getElementById('copyBtn').style.display = 'block';
+}
+
+function copyPaymentLink() {
+  const link = document.getElementById('generatedLink');
+  link.select();
+  document.execCommand('copy');
+
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = '✅ Copié!';
+  setTimeout(() => {
+    btn.textContent = '📋 Copier';
+  }, 2000);
+}
+
+// Utilities
+function formatMoney(amount) {
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'decimal',
+    minimumFractionDigits: 0
+  }).format(amount) + ' XOF';
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+function logout() {
+  if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+    localStorage.removeItem('beninpay_registered');
+    localStorage.removeItem('beninpay_merchant');
+    location.reload();
+  }
+}
+</script>
+
+</body>
+</html>

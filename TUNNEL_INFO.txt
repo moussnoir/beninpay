@@ -1,0 +1,30 @@
+🌐 TUNNEL CLOUDFLARE ACTIF
+
+URL: https://cdna-above-ash-staffing.trycloudflare.com
+Créé: 2026-06-19 05:59 UTC
+Cible: http://localhost:3000
+
+📋 URLS IMPORTANTES:
+
+Health Check:
+https://cdna-above-ash-staffing.trycloudflare.com/health
+
+OAuth Shopify:
+https://cdna-above-ash-staffing.trycloudflare.com/shopify/auth?shop=STORE.myshopify.com
+
+OAuth Callback (à configurer sur Shopify Partners):
+https://cdna-above-ash-staffing.trycloudflare.com/shopify/callback
+
+Checkout Page:
+https://cdna-above-ash-staffing.trycloudflare.com/checkout.html?amount=5000&orderId=TEST&shopName=Store
+
+Merchant Dashboard:
+https://cdna-above-ash-staffing.trycloudflare.com/merchant-dashboard.html?shop=STORE.myshopify.com
+
+Webhook FedaPay (à configurer sur FedaPay Dashboard):
+https://cdna-above-ash-staffing.trycloudflare.com/api/payment/webhook
+
+---
+
+⚠️ NOTE: URL temporaire, change à chaque redémarrage de cloudflared
+Pour URL permanente: créer un named tunnel sur cloudflare.com

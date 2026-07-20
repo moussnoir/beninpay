@@ -1,0 +1,43 @@
+{
+  "name": "beninpay",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "BeninPay - Mobile Money payments for Shopify (Benin)",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "db:init": "node config/database.js",
+    "test": "node test-complete-flow.js"
+  },
+  "dependencies": {
+    "@remix-run/node": "^2.12.0",
+    "@remix-run/react": "^2.12.0",
+    "@remix-run/serve": "^2.12.0",
+    "@sentry/node": "^10.67.0",
+    "@shopify/shopify-api": "^11.5.0",
+    "@shopify/shopify-app-remix": "^3.4.0",
+    "axios": "^1.18.0",
+    "bull": "^4.16.5",
+    "chart.js": "^4.5.1",
+    "cors": "^2.8.6",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
+    "express-rate-limit": "^8.6.0",
+    "helmet": "^8.3.0",
+    "ioredis": "^5.11.1",
+    "isbot": "^5.1.17",
+    "nodemailer": "^9.0.3",
+    "pg": "^8.22.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.12.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

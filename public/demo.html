@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeninPay - Démo Système Complet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 .emoji {
+            font-size: 1.3em;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f0f4f8;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status .icon {
+            font-size: 1.5em;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn.secondary {
+            background: #48bb78;
+        }
+
+        .btn.secondary:hover {
+            background: #38a169;
+        }
+
+        .btn.danger {
+            background: #f56565;
+        }
+
+        .btn.danger:hover {
+            background: #e53e3e;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #2c7a7b;
+        }
+
+        .code-box {
+            background: #1a202c;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        .workflow {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .workflow h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .flow-step .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .flow-step .step-content {
+            flex: 1;
+        }
+
+        .flow-step .step-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .flow-step .step-desc {
+            color: #718096;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .plan-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .plan-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .plan-card.recommended {
+            border-color: #48bb78;
+            position: relative;
+        }
+
+        .plan-card.recommended::before {
+            content: "⭐ RECOMMANDÉ";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #48bb78;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .plan-price {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .plan-price .currency {
+            font-size: 0.5em;
+            color: #718096;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: #4a5568;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .operators {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .operator-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .operator-card .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .operator-card .name {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .operator-card .code {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-step {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result pre {
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇧🇯 BeninPay - Démo Système Complet</h1>
+            <p class="subtitle">Paiements Mobile Money pour Shopify</p>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="demo-grid">
+            <div class="card">
+                <h2><span class="emoji">🖥️</span> Serveur</h2>
+                <div id="serverStatus" class="status">
+                    <span class="icon">⏳</span>
+                    <span>Vérification...</span>
+                </div>
+                <div class="info-box">
+                    <strong>URL:</strong> http://localhost:3000
+                </div>
+                <button class="btn secondary" onclick="checkServer()">Vérifier</button>
+            </div>
+
+            <div class="card">
+                <h2><span class="emoji">🌐</span> Tunnel Cloudflare</h2>
+                <div id="tunnelStatus" class="status">
+                    <span class="icon">⏳</span>
+                    <span>Vérification...</span>
+                </div>
+                <div class="info-box">
+                    <strong>URL:</strong> https://cdna-above-ash-staffing.trycloudflare.com
+                </div>
+                <button class="btn secondary" onclick="checkTunnel()">Vérifier</button>
+            </div>
+
+            <div class="card">
+                <h2><span class="emoji">💳</span> FedaPay</h2>
+                <div class="status success">
+                    <span class="icon">✅</span>
+                    <span>Mode LIVE configuré</span>
+                </div>
+                <div class="info-box">
+                    <strong>Clé:</strong> sk_live_LAV__Id...
+                </div>
+                <a href="https://dashboard.fedapay.com/" target="_blank" class="btn">Dashboard FedaPay</a>
+            </div>
+
+            <div class="card">
+                <h2><span class="emoji">🛍️</span> Shopify</h2>
+                <div class="status success">
+                    <span class="icon">✅</span>
+                    <span>OAuth configuré</span>
+                </div>
+                <div class="info-box">
+                    <strong>API Key:</strong> a206457e...
+                </div>
+                <a href="https://partners.shopify.com/" target="_blank" class="btn">Shopify Partners</a>
+            </div>
+        </div>
+
+        <!-- Workflow -->
+        <div class="workflow">
+            <h2>🔄 Workflow de Paiement Complet</h2>
+
+            <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Client commande sur Shopify</div>
+                    <div class="step-desc">Le client ajoute des produits au panier et passe commande. Shopify crée une commande avec status "pending".</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Marchand génère lien de paiement</div>
+                    <div class="step-desc">Via dashboard BeninPay, le marchand crée un lien de paiement avec le montant et l'order ID.</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Client reçoit le lien</div>
+                    <div class="step-desc">Le marchand envoie le lien par email, SMS ou WhatsApp. Le client clique sur le lien.</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Page checkout BeninPay</div>
+                    <div class="step-desc">Le client voit le montant + frais BeninPay (4%). Il clique "Payer maintenant".</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="step-title">Redirection FedaPay</div>
+                    <div class="step-desc">BeninPay crée une transaction FedaPay et redirige le client vers la page de paiement mobile.</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <div class="step-title">Paiement Mobile Money</div>
+                    <div class="step-desc">Client choisit opérateur (MTN/Moov/Celtis), entre son numéro et code PIN. Paiement confirmé.</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <div class="step-title">Webhook FedaPay → BeninPay</div>
+                    <div class="step-desc">FedaPay envoie webhook "transaction.approved". BeninPay met à jour sa base de données.</div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="step-number">8</div>
+                <div class="step-content">
+                    <div class="step-title">Mise à jour Shopify</div>
+                    <div class="step-desc">BeninPay notifie Shopify via API. La commande est marquée "PAID" ✅</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plans -->
+        <div class="card">
+            <h2><span class="emoji">💰</span> Plans BeninPay</h2>
+            <div id="plansContainer" class="plans-grid">
+                <div class="loading active">
+                    <div class="spinner"></div>
+                    <p>Chargement des plans...</p>
+                </div>
+            </div>
+            <button class="btn secondary" onclick="loadPlans()" style="margin-top: 20px;">Recharger les Plans</button>
+        </div>
+
+        <!-- Opérateurs -->
+        <div class="card">
+            <h2><span class="emoji">📱</span> Opérateurs Supportés</h2>
+            <div class="operators">
+                <div class="operator-card">
+                    <div class="logo">📱</div>
+                    <div class="name">MTN Mobile Money</div>
+                    <div class="code">Code: mtn</div>
+                </div>
+                <div class="operator-card">
+                    <div class="logo">💰</div>
+                    <div class="name">Moov Money</div>
+                    <div class="code">Code: moov</div>
+                </div>
+                <div class="operator-card">
+                    <div class="logo">🏦</div>
+                    <div class="name">Celtis Cash</div>
+                    <div class="code">Code: celtis</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Paiement -->
+        <div class="card">
+            <h2><span class="emoji">🧪</span> Tester un Paiement</h2>
+            <p style="margin-bottom: 15px;">Simulation d'un paiement de test (sans vraie transaction)</p>
+
+            <div style="margin: 15px 0;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Montant (XOF):</label>
+                <input type="number" id="testAmount" value="5000" style="padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; width: 100%; font-size: 1em;">
+            </div>
+
+            <div style="margin: 15px 0;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Order ID:</label>
+                <input type="text" id="testOrderId" value="TEST-001" style="padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; width: 100%; font-size: 1em;">
+            </div>
+
+            <button class="btn secondary" onclick="openCheckout()">Ouvrir Checkout</button>
+            <button class="btn" onclick="openDashboard()">Ouvrir Dashboard</button>
+
+            <div class="info-box" style="margin-top: 15px;">
+                <strong>💡 Astuce:</strong> Le checkout calcule automatiquement les frais BeninPay (4% du montant)
+            </div>
+        </div>
+
+        <!-- API Tests -->
+        <div class="card">
+            <h2><span class="emoji">🔧</span> Tests API</h2>
+
+            <button class="btn" onclick="testHealthEndpoint()">Test /health</button>
+            <button class="btn" onclick="testPlansEndpoint()">Test /api/plans</button>
+            <button class="btn" onclick="testShopifyStores()">Test /shopify/stores</button>
+
+            <div id="apiResults" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3000';
+        const TUNNEL_URL = 'https://cdna-above-ash-staffing.trycloudflare.com';
+
+        // Check server status
+        async function checkServer() {
+            const statusEl = document.getElementById('serverStatus');
+            statusEl.innerHTML = '<span class="icon">⏳</span><span>Vérification...</span>';
+            statusEl.className = 'status';
+
+            try {
+                const response = await fetch(`${BASE_URL}/health`);
+                const data = await response.json();
+
+                if (data.status === 'OK') {
+                    statusEl.innerHTML = '<span class="icon">✅</span><span>Serveur actif</span>';
+                    statusEl.className = 'status success';
+                } else {
+                    throw new Error('Status not OK');
+                }
+            } catch (error) {
+                statusEl.innerHTML = '<span class="icon">❌</span><span>Serveur inactif</span>';
+                statusEl.className = 'status error';
+            }
+        }
+
+        // Check tunnel status
+        async function checkTunnel() {
+            const statusEl = document.getElementById('tunnelStatus');
+            statusEl.innerHTML = '<span class="icon">⏳</span><span>Vérification...</span>';
+            statusEl.className = 'status';
+
+            try {
+                const response = await fetch(`${TUNNEL_URL}/health`, { mode: 'no-cors' });
+                statusEl.innerHTML = '<span class="icon">✅</span><span>Tunnel actif</span>';
+                statusEl.className = 'status success';
+            } catch (error) {
+                statusEl.innerHTML = '<span class="icon">⚠️</span><span>Tunnel peut être inactif</span>';
+                statusEl.className = 'status warning';
+            }
+        }
+
+        // Load plans
+        async function loadPlans() {
+            const container = document.getElementById('plansContainer');
+            container.innerHTML = '<div class="loading active"><div class="spinner"></div><p>Chargement...</p></div>';
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/plans`);
+                const data = await response.json();
+
+                if (data.success && data.plans) {
+                    container.innerHTML = data.plans.map(plan => `
+                        <div class="plan-card ${plan.recommended ? 'recommended' : ''}">
+                            <div class="plan-name">${plan.name}</div>
+                            <div class="plan-price">
+                                ${plan.price.toLocaleString()}
+                                <span class="currency">XOF/mois</span>
+                            </div>
+                            <ul class="plan-features">
+                                <li>📊 ${plan.features.maxTransactions === -1 ? 'Illimité' : plan.features.maxTransactions} transactions</li>
+                                <li>💵 Commission: ${plan.features.commission}%</li>
+                                <li>📱 ${plan.features.operators.join(', ')}</li>
+                                <li>🎧 Support: ${plan.features.support}</li>
+                                ${plan.features.webhooks ? '<li>🔗 Webhooks ✅</li>' : ''}
+                                ${plan.features.customBranding ? '<li>🎨 Custom branding ✅</li>' : ''}
+                            </ul>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error('Invalid response');
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="status error"><span class="icon">❌</span><span>Erreur de chargement</span></div>';
+            }
+        }
+
+        // Open checkout
+        function openCheckout() {
+            const amount = document.getElementById('testAmount').value;
+            const orderId = document.getElementById('testOrderId').value;
+            const url = `${BASE_URL}/checkout.html?amount=${amount}&orderId=${orderId}&shopName=BeninPay%20Demo`;
+            window.open(url, '_blank');
+        }
+
+        // Open dashboard
+        function openDashboard() {
+            const url = `${BASE_URL}/merchant-dashboard.html?shop=demo.myshopify.com`;
+            window.open(url, '_blank');
+        }
+
+        // Test endpoints
+        async function testHealthEndpoint() {
+            await testEndpoint('/health', 'Health Check');
+        }
+
+        async function testPlansEndpoint() {
+            await testEndpoint('/api/plans', 'Plans API');
+        }
+
+        async function testShopifyStores() {
+            await testEndpoint('/shopify/stores', 'Shopify Stores');
+        }
+
+        async function testEndpoint(endpoint, name) {
+            const resultsEl = document.getElementById('apiResults');
+            resultsEl.innerHTML = '<div class="loading active"><div class="spinner"></div><p>Test en cours...</p></div>';
+
+            try {
+                const response = await fetch(`${BASE_URL}${endpoint}`);
+                const data = await response.json();
+
+                resultsEl.innerHTML = `
+                    <div class="result">
+                        <h3>✅ ${name} - Succès</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultsEl.innerHTML = `
+                    <div class="result" style="border-left-color: #f56565;">
+                        <h3>❌ ${name} - Erreur</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            checkServer();
+            checkTunnel();
+            loadPlans();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                    🚀 BeninPay - URL D'INSTALLATION                        ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📊 STATUT DES SERVEURS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Serveur Node    : http://localhost:3000
+✅ Tunnel Cloudflare : https://vic-convert-defendant-acquisitions.trycloudflare.com
+✅ Health Check     : Actif
+✅ OAuth Routes     : Configurées
+
+
+🔗 URL D'INSTALLATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COPIE ET OUVRE CETTE URL DANS TON NAVIGATEUR :
+
+https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=TA-BOUTIQUE.myshopify.com
+
+⚠️  REMPLACE "TA-BOUTIQUE" PAR LE NOM DE TA VRAIE BOUTIQUE SHOPIFY !
+
+
+📝 EXEMPLES D'URLS COMPLÈTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si ta boutique est "test.myshopify.com" :
+👉 https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=test.myshopify.com
+
+Si ta boutique est "beninlivraison.myshopify.com" :
+👉 https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=beninlivraison.myshopify.com
+
+Si ta boutique est "demo.myshopify.com" :
+👉 https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=demo.myshopify.com
+
+
+📋 ÉTAPES À SUIVRE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 📝 CONSTRUIS TON URL
+   - Copie : https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=
+   - Ajoute ton nom de boutique : TA-BOUTIQUE.myshopify.com
+   - URL finale : https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/auth?shop=TA-BOUTIQUE.myshopify.com
+
+2. 🌐 OUVRE DANS LE NAVIGATEUR
+   - Colle l'URL dans Chrome/Firefox/Edge
+   - Appuie sur Entrée
+
+3. 🔐 AUTORISE L'APP
+   Shopify va te montrer :
+
+   "BeninPay wants to:
+    ☑️ Read orders
+    ☑️ Write orders
+    ☑️ Read products
+    ☑️ Read customers
+    ☑️ Write checkouts"
+
+   ➡️  Clique sur "Install app" ou "Installer l'application"
+
+4. ✅ CONFIRMATION
+   Tu seras redirigé vers une page :
+
+   "🎉 Installation Réussie!
+
+   BeninPay a été installé avec succès sur votre boutique Shopify.
+
+   🏪 ta-boutique.myshopify.com
+
+   [📊 Accéder au Dashboard]"
+
+5. 🎯 DASHBOARD
+   Clique sur "Accéder au Dashboard" pour voir ton tableau de bord marchand
+
+
+🔍 VÉRIFIER L'INSTALLATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Option 1 : Via API
+curl "https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/verify?shop=TA-BOUTIQUE.myshopify.com"
+
+Option 2 : Dans Shopify Admin
+1. Va sur https://TA-BOUTIQUE.myshopify.com/admin
+2. Settings → Apps and sales channels
+3. Tu devrais voir "BeninPay" dans la liste
+
+
+⚠️  PROBLÈMES COURANTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problème 1 : "Page introuvable" ou "Cannot connect"
+Solution : Vérifie que les serveurs tournent :
+  → Terminal 1 : node server.js
+  → Terminal 2 : cloudflared tunnel --url http://localhost:3000
+
+Problème 2 : "App not found"
+Solution : L'app n'existe pas dans Shopify Partners
+  1. Va sur https://partners.shopify.com
+  2. Crée une nouvelle app
+  3. Configure l'URL : https://vic-convert-defendant-acquisitions.trycloudflare.com
+
+Problème 3 : "Invalid redirect_uri"
+Solution : Ajoute l'URL callback dans Shopify Partners
+  → Allowed redirection URLs : https://vic-convert-defendant-acquisitions.trycloudflare.com/shopify/callback
+
+Problème 4 : Tunnel expiré
+Solution : Cloudflared génère une nouvelle URL à chaque lancement
+  1. Regarde cloudflare-tunnel.log pour la nouvelle URL
+  2. Met à jour .env et shopify.app.toml
+  3. Relance le serveur
+
+
+📞 SUPPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Documentation complète : INSTALLATION_SHOPIFY_COMPLETE.md
+
+Logs serveur : tail -f server.log
+Logs tunnel   : tail -f cloudflare-tunnel.log
+
+Test local   : curl http://localhost:3000/health
+Test tunnel  : Ouvre l'URL dans le navigateur
+
+
+🎯 PROCHAINES ÉTAPES APRÈS INSTALLATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ✅ Vérifier que l'app apparaît dans Shopify Admin
+2. 🧪 Tester une commande avec paiement Mobile Money
+3. 📊 Explorer le dashboard marchand
+4. 📝 Configurer les webhooks FedaPay
+5. 🚀 Déployer en production
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Date : 2026-07-18
+Version : 2.0
+App ID : 40f1c620279dad8f3b581cce8d7d33a5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

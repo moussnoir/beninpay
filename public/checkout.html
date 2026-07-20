@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeninPay - Paiement Mobile Money</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(180deg, #f0f9f6 0%, #e8f4f0 100%);
+  min-height: 100vh; padding: 40px 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card {
+  background: white; border-radius: 24px; padding: 40px;
+  max-width: 480px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,184,148,0.1), 0 1px 3px rgba(0,0,0,0.05);
+}
+.logo { text-align: center; margin-bottom: 24px; }
+.logo-text { font-size: 24px; font-weight: 800; color: #00b894; }
+.logo-sub { font-size: 12px; color: #666; margin-top: 4px; }
+
+.status-pending { text-align: center; padding: 32px 0; }
+.status-icon { font-size: 48px; margin-bottom: 12px; }
+.status-text { font-size: 16px; font-weight: 600; color: #333; }
+.status-sub { font-size: 13px; color: #888; margin-top: 8px; }
+
+.status-paid .status-icon { color: #00b894; }
+.status-failed .status-icon { color: #e74c3c; }
+
+.order-details { background: #f8fafb; border-radius: 14px; padding: 20px; margin: 20px 0; }
+.order-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+.order-row:last-child { border: none; }
+.order-label { color: #888; }
+.order-value { font-weight: 600; color: #333; }
+.order-total { font-size: 20px; font-weight: 800; color: #00b894; }
+
+.pay-btn {
+  display: block; width: 100%; padding: 16px; border: none; border-radius: 14px;
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  color: white; font-size: 16px; font-weight: 700; cursor: pointer;
+  margin-top: 20px; transition: all 0.2s; font-family: inherit;
+}
+.pay-btn:hover { box-shadow: 0 8px 24px rgba(0,184,148,0.3); transform: translateY(-2px); }
+.pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.operators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+.op { padding: 14px; border: 2px solid #eee; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.op:hover { border-color: #00b894; }
+.op.selected { border-color: #00b894; background: #f0fff9; }
+.op-icon { font-size: 22px; }
+.op-name { font-size: 11px; font-weight: 700; margin-top: 4px; }
+
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; display: block; }
+.form-input { width: 100%; padding: 12px 16px; border: 2px solid #eee; border-radius: 10px; font-size: 14px; font-family: inherit; }
+.form-input:focus { outline: none; border-color: #00b894; }
+
+.loading { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.timer { text-align: center; font-size: 12px; color: #888; margin-top: 12px; }
+.secure { text-align: center; font-size: 11px; color: #999; margin-top: 16px; }
+
+.back-link { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: #888; text-decoration: none; }
+.back-link:hover { color: #333; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-text">BeninPay</div>
+    <div class="logo-sub">Paiement Mobile Money securise</div>
+  </div>
+
+  <div id="content">
+    <div class="status-pending">
+      <div class="status-icon">⏳</div>
+      <div class="status-text">Chargement de la commande...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = window.location.origin;
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get('order');
+const directAmount = params.get('amount');
+const directShop = params.get('shop');
+let selectedOp = null;
+
+async function init() {
+  if (orderId) {
+    await loadOrder();
+  } else if (directAmount) {
+    showDirectPayment();
+  } else {
+    showError('Aucune commande specifiee');
+  }
+}
+
+async function loadOrder() {
+  try {
+    const res = await fetch(`${API_URL}/api/checkout/status/${orderId}`);
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.error);
+
+    const order = data.order;
+
+    if (order.payment_status === 'completed' || order.status === 'paid') {
+      showSuccess(order);
+    } else {
+      showOrderPayment(order);
+    }
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+function showOrderPayment(order) {
+  document.getElementById('content').innerHTML = `
+    <div class="order-details">
+      <div class="order-row"><span class="order-label">Produit</span><span class="order-value">${order.product}</span></div>
+      <div class="order-row"><span class="order-label">Client</span><span class="order-value">${order.customer_name}</span></div>
+      <div class="order-row"><span class="order-label">Commande</span><span class="order-value" style="font-size:11px;font-family:monospace;">${order.id}</span></div>
+      <div class="order-row"><span class="order-label">Total</span><span class="order-value order-total">${order.amount.toLocaleString('fr-FR')} FCFA</span></div>
+    </div>
+
+    <div class="status-pending" style="padding:16px 0;">
+      <div class="status-icon">📱</div>
+      <div class="status-text">En attente de paiement</div>
+      <div class="status-sub">Completez le paiement via Mobile Money</div>
+    </div>
+
+    <div class="timer" id="timer">Verification automatique du statut...</div>
+    <a href="javascript:checkStatus()" class="back-link">Verifier le statut du paiement</a>
+    <div class="secure">🔒 Paiement securise par FedaPay</div>
+  `;
+  startPolling();
+}
+
+function showDirectPayment() {
+  const amount = parseInt(directAmount);
+  document.getElementById('content').innerHTML = `
+    <div class="order-details">
+      <div class="order-row"><span class="order-label">Boutique</span><span class="order-value">${directShop || 'Boutique'}</span></div>
+      <div class="order-row"><span class="order-label">Total a payer</span><span class="order-value order-total">${amount.toLocaleString('fr-FR')} FCFA</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Votre nom</label>
+      <input type="text" class="form-input" id="pName" placeholder="Jean Koffi">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Telephone</label>
+      <input type="tel" class="form-input" id="pPhone" placeholder="+229 97 12 34 56">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email (optionnel)</label>
+      <input type="email" class="form-input" id="pEmail" placeholder="jean@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Operateur</label>
+      <div class="operators">
+        <div class="op" onclick="selectOp(this, 'mtn')"><div class="op-icon">📱</div><div class="op-name">MTN</div></div>
+        <div class="op" onclick="selectOp(this, 'moov')"><div class="op-icon">📲</div><div class="op-name">Moov</div></div>
+        <div class="op" onclick="selectOp(this, 'celtis')"><div class="op-icon">💵</div><div class="op-name">Celtis</div></div>
+      </div>
+    </div>
+    <button class="pay-btn" onclick="submitDirectPayment(${amount})">Payer ${amount.toLocaleString('fr-FR')} FCFA</button>
+    <div class="secure">🔒 Paiement securise par FedaPay</div>
+  `;
+}
+
+function selectOp(el, op) {
+  document.querySelectorAll('.op').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedOp = op;
+}
+
+async function submitDirectPayment(amount) {
+  const name = document.getElementById('pName').value.trim();
+  const phone = document.getElementById('pPhone').value.trim();
+  const email = document.getElementById('pEmail').value.trim();
+
+  if (!name || !phone || !selectedOp) {
+    alert('Veuillez remplir tous les champs obligatoires');
+    return;
+  }
+
+  const btn = document.querySelector('.pay-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>';
+
+  try {
+    const res = await fetch(`${API_URL}/api/checkout/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        shop: directShop || 'direct-payment',
+        product_title: 'Paiement direct',
+        amount: amount,
+        quantity: 1,
+        customer_name: name,
+        customer_phone: phone,
+        customer_email: email,
+        operator: selectedOp
+      })
+    });
+    const data = await res.json();
+
+    if (data.success && data.payment_url) {
+      window.location.href = data.payment_url;
+    } else if (data.success && data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else {
+      throw new Error(data.error || 'Erreur de paiement');
+    }
+  } catch (e) {
+    alert('Erreur: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = `Payer ${amount.toLocaleString('fr-FR')} FCFA`;
+  }
+}
+
+function showSuccess(order) {
+  document.getElementById('content').innerHTML = `
+    <div class="status-pending status-paid">
+      <div class="status-icon">✅</div>
+      <div class="status-text">Paiement confirme!</div>
+      <div class="status-sub">Votre paiement de ${order.amount.toLocaleString('fr-FR')} FCFA a ete recu.</div>
+    </div>
+    <div class="order-details">
+      <div class="order-row"><span class="order-label">Commande</span><span class="order-value">${order.id}</span></div>
+      <div class="order-row"><span class="order-label">Montant</span><span class="order-value order-total">${order.amount.toLocaleString('fr-FR')} FCFA</span></div>
+      <div class="order-row"><span class="order-label">Statut</span><span class="order-value" style="color:#00b894;">Paye ✓</span></div>
+    </div>
+    <div class="secure">Merci pour votre achat! Le marchand a ete notifie.</div>
+  `;
+}
+
+function showError(msg) {
+  document.getElementById('content').innerHTML = `
+    <div class="status-pending status-failed">
+      <div class="status-icon">❌</div>
+      <div class="status-text">Erreur</div>
+      <div class="status-sub">${msg}</div>
+    </div>
+    <a href="javascript:history.back()" class="back-link">← Retour</a>
+  `;
+}
+
+let pollInterval;
+function startPolling() {
+  pollInterval = setInterval(checkStatus, 5000);
+}
+
+async function checkStatus() {
+  if (!orderId) return;
+  try {
+    const res = await fetch(`${API_URL}/api/checkout/status/${orderId}`);
+    const data = await res.json();
+    if (data.success && (data.order.payment_status === 'completed' || data.order.status === 'paid')) {
+      clearInterval(pollInterval);
+      showSuccess(data.order);
+    }
+  } catch (e) {}
+}
+
+init();
+</script>
+</body>
+</html>

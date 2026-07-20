@@ -1,0 +1,33 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "40f1c620279dad8f3b581cce8d7d33a5"
+name = "BeninPay"
+application_url = "https://famous-hereby-journey-montreal.trycloudflare.com"
+embedded = false
+
+[webhooks]
+api_version = "2024-01"
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/app-uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/orders-paid"
+  topics = [ "orders/paid" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhooks/orders-create"
+  topics = [ "orders/create" ]
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,read_orders,read_products,write_checkouts,write_orders"
+
+[auth]
+redirect_urls = [
+  "https://famous-hereby-journey-montreal.trycloudflare.com/shopify/callback"
+]
+
+[pos]
+embedded = false
