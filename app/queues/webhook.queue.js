@@ -68,7 +68,7 @@ async function processFedapayApproved(payload) {
     const merchant = merchantResult.rows[0];
     if (!merchant) return;
 
-    const fee = Math.round(amount * 0.02);
+    const fee = Math.round(amount * 0.035);
     const merchantAmount = amount - fee;
 
     await pool.query(

@@ -73,17 +73,17 @@ app.get('/api/plans', (req, res) => {
   const PLANS = {
     FREE: {
       id: 'free', name: 'Gratuit', price: 0, currency: 'XOF',
-      features: { maxTransactions: 10, commission: 2.5, operators: ['mtn', 'moov'], support: 'Email', dashboard: true, webhooks: false, customBranding: false },
+      features: { maxTransactions: 10, commission: 3.5, operators: ['mtn', 'moov'], support: 'Email', dashboard: true, webhooks: false, customBranding: false },
       description: 'Parfait pour tester BeninPay', recommended: false
     },
     BASIC: {
       id: 'basic', name: 'Basique', price: 5000, currency: 'XOF',
-      features: { maxTransactions: 100, commission: 1.8, operators: ['mtn', 'moov', 'celtis'], support: 'Email + Chat', dashboard: true, webhooks: true, customBranding: false },
+      features: { maxTransactions: 100, commission: 3.5, operators: ['mtn', 'moov', 'celtis'], support: 'Email + Chat', dashboard: true, webhooks: true, customBranding: false },
       description: 'Pour les petites boutiques', recommended: true
     },
     PREMIUM: {
       id: 'premium', name: 'Premium', price: 25000, currency: 'XOF',
-      features: { maxTransactions: -1, commission: 1.2, operators: ['mtn', 'moov', 'celtis'], support: 'Prioritaire 24/7', dashboard: true, webhooks: true, customBranding: true, analytics: true, apiAccess: true },
+      features: { maxTransactions: -1, commission: 3.5, operators: ['mtn', 'moov', 'celtis'], support: 'Prioritaire 24/7', dashboard: true, webhooks: true, customBranding: true, analytics: true, apiAccess: true },
       description: 'Pour les grandes boutiques', recommended: false
     }
   };

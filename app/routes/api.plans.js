@@ -13,7 +13,7 @@ export async function loader({ request }) {
       currency: 'XOF',
       features: {
         maxTransactions: 10,
-        commission: 2.5,
+        commission: 3.5,
         operators: ['mtn', 'moov'],
         support: 'Email',
         dashboard: true,
@@ -30,7 +30,7 @@ export async function loader({ request }) {
       currency: 'XOF',
       features: {
         maxTransactions: 100,
-        commission: 1.8,
+        commission: 3.5,
         operators: ['mtn', 'moov', 'celtis'],
         support: 'Email + Chat',
         dashboard: true,
@@ -47,7 +47,7 @@ export async function loader({ request }) {
       currency: 'XOF',
       features: {
         maxTransactions: -1,
-        commission: 1.2,
+        commission: 3.5,
         operators: ['mtn', 'moov', 'celtis'],
         support: 'Prioritaire 24/7',
         dashboard: true,

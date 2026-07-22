@@ -11,7 +11,7 @@ export const PLANS = {
     currency: 'XOF',
     features: {
       maxTransactions: 10,
-      commission: 2.5, // 2.5% de commission
+      commission: 3.5, // 3.5% de commission
       operators: ['mtn', 'moov'],
       support: 'Email',
       dashboard: true,
@@ -28,7 +28,7 @@ export const PLANS = {
     currency: 'XOF',
     features: {
       maxTransactions: 100,
-      commission: 1.8, // 1.8% de commission
+      commission: 3.5, // 3.5% de commission
       operators: ['mtn', 'moov', 'celtis'],
       support: 'Email + Chat',
       dashboard: true,
@@ -45,7 +45,7 @@ export const PLANS = {
     currency: 'XOF',
     features: {
       maxTransactions: -1, // Illimité
-      commission: 1.2, // 1.2% de commission
+      commission: 3.5, // 3.5% de commission
       operators: ['mtn', 'moov', 'celtis'],
       support: 'Prioritaire 24/7',
       dashboard: true,

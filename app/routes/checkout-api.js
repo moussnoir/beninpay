@@ -216,7 +216,7 @@ router.post('/sync/:orderId', async (req, res) => {
 
       if (merchant) {
         const amount = order.amount;
-        const fee = Math.round(amount * 0.02);
+        const fee = Math.round(amount * 0.035);
         const merchantAmount = amount - fee;
         const txId = order.fedapay_transaction_id || `manual_${Date.now()}`;
 
@@ -299,7 +299,7 @@ router.post('/sync-all', async (req, res) => {
 
           if (merchant) {
             const amount = order.amount;
-            const fee = Math.round(amount * 0.02);
+            const fee = Math.round(amount * 0.035);
             const merchantAmount = amount - fee;
             if (!data.transactions) data.transactions = [];
             const existing = data.transactions.find(t => t.order_id === order.order_ref);

@@ -82,8 +82,8 @@ router.post('/api/withdrawals/request', async (req, res) => {
       });
     }
 
-    // Calculer frais (2%)
-    const fee = Math.round(amount * 0.02);
+    // Calculer frais (3.5%)
+    const fee = Math.round(amount * 0.035);
     const netAmount = amount - fee;
 
     // Créer demande
@@ -428,7 +428,7 @@ ${withdrawals.length > 0 ? `
     </div>
 
     <div style="margin: 15px 0; padding: 15px; background: #fff3e0; border-radius: 8px; font-size: 13px;">
-      <strong>Frais de retrait: 2%</strong><br>
+      <strong>Frais de retrait: 3.5%</strong><br>
       Vous recevrez le montant net après déduction des frais.
     </div>
 

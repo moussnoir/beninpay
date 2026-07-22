@@ -39,7 +39,7 @@ router.get('/fedapay', (req, res) => {
 
         if (merchant) {
           const amount = matchingOrder.amount;
-          const fee = Math.round(amount * 0.02);
+          const fee = Math.round(amount * 0.035);
           const merchantAmount = amount - fee;
 
           if (!data.transactions) data.transactions = [];
@@ -132,7 +132,7 @@ router.post('/fedapay', async (req, res) => {
           m.shop_domain?.includes(resolvedShopDomain.split('.')[0])
         );
         if (merchant) {
-          const fee = Math.round(amount * 0.02);
+          const fee = Math.round(amount * 0.035);
           const merchantAmount = amount - fee;
 
           // Create transaction record
