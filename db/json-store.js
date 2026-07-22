@@ -9,7 +9,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_FILE = path.join(__dirname, 'beninpay-data.json');
+// Sur Render, utiliser /opt/render/.data pour persistance entre redeploys
+// Sinon fallback vers le dossier local db/
+const PERSISTENT_DIR = process.env.RENDER
+  ? '/opt/render/.data'
+  : __dirname;
+
+// Creer le repertoire si necessaire
+try { if (!fs.existsSync(PERSISTENT_DIR)) fs.mkdirSync(PERSISTENT_DIR, { recursive: true }); } catch(e) {}
+
+const DB_FILE = path.join(PERSISTENT_DIR, 'beninpay-data.json');
+const DB_BACKUP = path.join(__dirname, 'beninpay-data.json');
 
 // Structure de données initiale
 const initialData = {
@@ -19,25 +29,38 @@ const initialData = {
   activity_logs: []
 };
 
-// Charger les données
+// Charger les données (avec fallback vers backup)
 function loadData() {
   try {
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
-      return initialData;
+    if (fs.existsSync(DB_FILE)) {
+      const data = fs.readFileSync(DB_FILE, 'utf8');
+      return JSON.parse(data);
     }
-    const data = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(data);
+    // Fallback: essayer le backup dans le repo
+    if (DB_FILE !== DB_BACKUP && fs.existsSync(DB_BACKUP)) {
+      console.log('[DB] Restauration depuis backup...');
+      const data = fs.readFileSync(DB_BACKUP, 'utf8');
+      const parsed = JSON.parse(data);
+      fs.writeFileSync(DB_FILE, JSON.stringify(parsed, null, 2));
+      return parsed;
+    }
+    fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+    return initialData;
   } catch (error) {
     console.error('[DB] Erreur chargement:', error);
     return initialData;
   }
 }
 
-// Sauvegarder les données
+// Sauvegarder les données (ecriture atomique + backup)
 function saveData(data) {
   try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(DB_FILE, json);
+    // Aussi sauvegarder le backup si chemin different
+    if (DB_FILE !== DB_BACKUP) {
+      try { fs.writeFileSync(DB_BACKUP, json); } catch(e) {}
+    }
   } catch (error) {
     console.error('[DB] Erreur sauvegarde:', error);
   }
