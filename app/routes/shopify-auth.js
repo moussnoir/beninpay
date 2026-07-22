@@ -63,31 +63,64 @@ router.get('/auth', async (req, res) => {
 
 /**
  * GET /shopify/callback
- * Callback après autorisation OAuth
+ * Callback après autorisation OAuth — échange manuelle du code
  */
 router.get('/callback', async (req, res) => {
   try {
     console.log('🔄 Callback OAuth reçu');
 
-    // Valider et échanger le code contre un token
-    const callback = await shopify.auth.callback({
-      rawRequest: req,
-      rawResponse: res,
+    const { shop, code, hmac } = req.query;
+
+    if (!shop || !code) {
+      throw new Error('Paramètres manquants (shop ou code)');
+    }
+
+    // Vérifier le HMAC
+    const queryParams = { ...req.query };
+    delete queryParams.hmac;
+    const sortedKeys = Object.keys(queryParams).sort();
+    const message = sortedKeys.map(k => `${k}=${queryParams[k]}`).join('&');
+    const digest = crypto.createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+      .update(message).digest('hex');
+
+    if (digest !== hmac) {
+      console.warn('⚠️ HMAC invalide');
+      throw new Error('Signature HMAC invalide');
+    }
+
+    // Échanger le code contre un access_token
+    const tokenUrl = `https://${shop}/admin/oauth/access_token`;
+    const tokenRes = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: process.env.SHOPIFY_API_KEY,
+        client_secret: process.env.SHOPIFY_API_SECRET,
+        code: code
+      })
     });
 
-    const { session } = callback;
+    if (!tokenRes.ok) {
+      const errBody = await tokenRes.text();
+      throw new Error(`Shopify token exchange failed: ${errBody}`);
+    }
+
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
+    const scope = tokenData.scope;
+
+    const session = { shop, accessToken, scope };
 
     // Sauvegarder la session
-    sessionStorage.set(session.shop, {
-      shop: session.shop,
-      accessToken: session.accessToken,
-      scope: session.scope,
-      isOnline: session.isOnline,
+    sessionStorage.set(shop, {
+      shop,
+      accessToken,
+      scope,
       installedAt: new Date().toISOString(),
     });
 
-    console.log('✅ App installée avec succès pour:', session.shop);
-    console.log('📊 Scopes accordés:', session.scope);
+    console.log('✅ App installée avec succès pour:', shop);
+    console.log('📊 Scopes accordés:', scope);
 
     // Installer le ScriptTag pour le bouton Mobile Money sur la page panier
     try {
