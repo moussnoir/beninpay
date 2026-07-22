@@ -88,18 +88,17 @@ body {
 const API_URL = window.location.origin;
 const params = new URLSearchParams(window.location.search);
 const orderId = params.get('order');
-const directAmount = params.get('amount');
 const directShop = params.get('shop');
 const directCurrency = (params.get('currency') || 'XOF').toUpperCase();
 let selectedOp = null;
 
 const statusParam = params.get('status');
 
-// Taux de conversion vers XOF (FCFA) - mis a jour regulierement
+// Taux de conversion vers XOF (FCFA)
 const RATES_TO_XOF = {
   XOF: 1,
   EUR: 655.957,   // Taux fixe (parite CFA-Euro)
-  USD: 600,       // ~600 FCFA pour 1 USD (approximatif)
+  USD: 600,       // ~600 FCFA pour 1 USD
   GBP: 760,       // ~760 FCFA pour 1 GBP
   CAD: 445,       // ~445 FCFA pour 1 CAD
   NGN: 0.40,      // ~0.40 FCFA pour 1 Naira
@@ -109,27 +108,62 @@ const RATES_TO_XOF = {
   CFA: 1
 };
 
-function convertToXOF(amount, fromCurrency) {
+// Devises sans sous-unites (zero-decimal) - Shopify envoie deja en unites entieres
+const ZERO_DECIMAL = ['XOF','XAF','BIF','CLP','DJF','GNF','ISK','JPY','KMF','KRW','PYG','RWF','UGX','VND','VUV','FCFA','CFA'];
+
+// Convertir le prix brut Shopify (sous-unites) en montant reel dans la devise source
+function shopifyRawToReal(rawAmount, currency) {
+  const curr = (currency || 'XOF').toUpperCase();
+  if (ZERO_DECIMAL.indexOf(curr) >= 0) return rawAmount;
+  return rawAmount / 100; // EUR 2000 -> 20.00€, USD 20 -> 0.20$
+}
+
+// Convertir un montant reel en XOF
+function convertToXOF(realAmount, fromCurrency) {
   const curr = (fromCurrency || 'XOF').toUpperCase();
   const rate = RATES_TO_XOF[curr] || 1;
-  return Math.round(amount * rate);
+  return Math.round(realAmount * rate);
 }
 
 function getCurrencySymbol(curr) {
-  const symbols = { XOF: 'FCFA', EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', NGN: '₦', GHS: 'GH₵', MAD: 'MAD', FCFA: 'FCFA', CFA: 'FCFA' };
+  const symbols = { XOF: 'FCFA', EUR: '€', USD: '$', GBP: '£', CAD: 'CA$', NGN: '₦', GHS: 'GH₵', MAD: 'MAD', FCFA: 'FCFA', CFA: 'FCFA', XAF: 'FCFA' };
   return symbols[(curr || 'XOF').toUpperCase()] || curr;
 }
 
 function formatPrice(amount, currency) {
-  return `${amount.toLocaleString('fr-FR')} ${getCurrencySymbol(currency)}`;
+  const curr = (currency || 'XOF').toUpperCase();
+  // Pour les devises a centimes, afficher avec 2 decimales si < 1 unite
+  if (ZERO_DECIMAL.indexOf(curr) < 0 && amount < 100) {
+    return `${amount.toFixed(2)} ${getCurrencySymbol(curr)}`;
+  }
+  return `${Math.round(amount).toLocaleString('fr-FR')} ${getCurrencySymbol(currency)}`;
 }
+
+// Recuperer le montant: raw_amount (nouveau) ou amount (ancien/compatible)
+const rawAmountParam = params.get('raw_amount');
+const legacyAmountParam = params.get('amount');
+let directAmountXOF = 0;
+let directAmountOriginal = 0;
+
+if (rawAmountParam) {
+  // Nouveau format: prix brut Shopify en sous-unites
+  const raw = parseInt(rawAmountParam);
+  directAmountOriginal = shopifyRawToReal(raw, directCurrency);
+  directAmountXOF = convertToXOF(directAmountOriginal, directCurrency);
+} else if (legacyAmountParam) {
+  // Ancien format: montant deja converti (compatibilite)
+  directAmountOriginal = parseFloat(legacyAmountParam);
+  directAmountXOF = convertToXOF(directAmountOriginal, directCurrency);
+}
+
+const directAmount = directAmountXOF || legacyAmountParam;
 
 async function init() {
   if (statusParam === 'completed' || statusParam === 'approved') {
     showPaymentSuccess();
   } else if (orderId) {
     await loadOrder();
-  } else if (directAmount) {
+  } else if (directAmountXOF > 0 || legacyAmountParam) {
     showDirectPayment();
   } else {
     showError('Aucune commande specifiee');
@@ -198,13 +232,17 @@ function showOrderPayment(order) {
 }
 
 function showDirectPayment() {
-  const rawAmount = parseInt(directAmount);
-  const amountXOF = convertToXOF(rawAmount, directCurrency);
-  const isConverted = directCurrency !== 'XOF' && directCurrency !== 'FCFA' && directCurrency !== 'CFA';
+  const amountXOF = directAmountXOF;
+  const isConverted = directCurrency !== 'XOF' && directCurrency !== 'FCFA' && directCurrency !== 'CFA' && directCurrency !== 'XAF';
   const conversionInfo = isConverted
-    ? `<div class="order-row"><span class="order-label">Prix original</span><span class="order-value">${formatPrice(rawAmount, directCurrency)}</span></div>
-       <div class="order-row"><span class="order-label">Taux</span><span class="order-value">1 ${getCurrencySymbol(directCurrency)} = ${RATES_TO_XOF[directCurrency.toUpperCase()] || 1} FCFA</span></div>`
+    ? `<div class="order-row"><span class="order-label">Prix original</span><span class="order-value">${formatPrice(directAmountOriginal, directCurrency)}</span></div>
+       <div class="order-row"><span class="order-label">Taux</span><span class="order-value">1 ${getCurrencySymbol(directCurrency)} = ${RATES_TO_XOF[directCurrency] || 1} FCFA</span></div>`
     : '';
+
+  if (amountXOF <= 0) {
+    showError('Montant invalide (0 FCFA). Verifiez le prix du produit.');
+    return;
+  }
 
   document.getElementById('content').innerHTML = `
     <div class="order-details">
@@ -266,7 +304,7 @@ async function submitDirectPayment(amount) {
         shop: directShop || 'direct-payment',
         product_title: params.get('product') || 'Paiement direct',
         amount: amount,
-        original_amount: parseInt(directAmount),
+        original_amount: directAmountOriginal,
         original_currency: directCurrency,
         quantity: parseInt(params.get('quantity')) || 1,
         customer_name: name,
