@@ -1,0 +1,11 @@
+api_version = "2024-01"
+
+[[extensions]]
+type = "theme"
+name = "BeninPay Mobile Money"
+handle = "beninpay-mobile-money"
+uid = "7153f6c6-5be0-583a-87ea-e6557b5a770df89c2897"
+
+  [[extensions.targeting]]
+  module = "./blocks/beninpay-cart-button.liquid"
+  target = "section"

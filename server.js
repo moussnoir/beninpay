@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import * as Sentry from '@sentry/node';
 import { createPayment, checkTransactionStatus } from './app/services/fedapay.service.js';
+import { injectButtonIntoTheme, removeButtonFromTheme } from './app/services/theme-inject.service.js';
 import merchantRoutes from './app/routes/merchant-api.js';
 import adminRoutes from './app/routes/admin-api.js';
 import shopifyAuthRoutes from './app/routes/shopify-auth.js';
@@ -140,6 +141,33 @@ app.get('/api/payment/status/:transactionId', async (req, res) => {
   } catch (error) {
     console.error('[Status] Error:', error.message);
     res.status(500).json({ success: false, error: 'Erreur serveur' });
+  }
+});
+
+// Theme button injection (manual reinstall)
+app.post('/api/theme/inject-button', async (req, res) => {
+  try {
+    const { shop, accessToken } = req.body;
+    if (!shop || !accessToken) {
+      return res.status(400).json({ success: false, error: 'shop and accessToken required' });
+    }
+    const result = await injectButtonIntoTheme(shop, accessToken);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/theme/remove-button', async (req, res) => {
+  try {
+    const { shop, accessToken } = req.body;
+    if (!shop || !accessToken) {
+      return res.status(400).json({ success: false, error: 'shop and accessToken required' });
+    }
+    const result = await removeButtonFromTheme(shop, accessToken);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

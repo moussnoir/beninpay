@@ -1,0 +1,20 @@
+{
+  "beninpay": {
+    "name": "BeninPay Mobile Money",
+    "description": "Bouton de paiement Mobile Money (MTN, Moov, Celtis) pour le Benin",
+    "settings": {
+      "app_url": {
+        "label": "URL de l'application BeninPay"
+      },
+      "show_operators": {
+        "label": "Afficher les logos des operateurs"
+      },
+      "button_color": {
+        "label": "Couleur du bouton"
+      },
+      "button_text": {
+        "label": "Texte du bouton"
+      }
+    }
+  }
+}

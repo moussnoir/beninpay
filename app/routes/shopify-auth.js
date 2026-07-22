@@ -2,6 +2,7 @@ import express from 'express';
 import '@shopify/shopify-api/adapters/node';
 import { shopifyApi, ApiVersion, LATEST_API_VERSION } from '@shopify/shopify-api';
 import crypto from 'crypto';
+import { injectButtonIntoTheme } from '../services/theme-inject.service.js';
 
 const router = express.Router();
 
@@ -122,43 +123,28 @@ router.get('/callback', async (req, res) => {
     console.log('✅ App installée avec succès pour:', shop);
     console.log('📊 Scopes accordés:', scope);
 
-    // Installer le ScriptTag pour le bouton Mobile Money sur la page panier
+    // Injecter le bouton Mobile Money directement dans le thème (fonctionne sur boutiques dev)
     try {
-      const scriptSrc = `${process.env.SHOPIFY_APP_URL}/js/beninpay-button.js`;
-      const apiBase = `https://${session.shop}/admin/api/${LATEST_API_VERSION}`;
-      const headers = {
-        'X-Shopify-Access-Token': session.accessToken,
-        'Content-Type': 'application/json'
-      };
-
-      // D'abord vérifier si le ScriptTag existe déjà
-      const listRes = await fetch(`${apiBase}/script_tags.json`, { headers });
-      const existing = listRes.ok ? await listRes.json() : { script_tags: [] };
-      const alreadyInstalled = existing.script_tags?.some(st => st.src.includes('beninpay-button'));
-
-      if (!alreadyInstalled) {
-        const response = await fetch(`${apiBase}/script_tags.json`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            script_tag: {
-              event: 'onload',
-              src: scriptSrc,
-              display_scope: 'online_store'
-            }
-          })
-        });
-        if (response.ok) {
-          console.log('✅ ScriptTag installé automatiquement:', scriptSrc);
-        } else {
-          const errText = await response.text();
-          console.warn('⚠️ ScriptTag non installé (status', response.status, '):', errText);
-        }
+      const injectResult = await injectButtonIntoTheme(session.shop, session.accessToken);
+      if (injectResult.success) {
+        console.log('✅ Bouton Mobile Money injecté dans le thème:', injectResult.themeName);
+        console.log('   - Snippet créé:', injectResult.snippetCreated);
+        console.log('   - Template modifié:', injectResult.cartTemplateModified);
       } else {
-        console.log('✅ ScriptTag déjà présent, pas de doublon');
+        console.warn('⚠️ Injection thème échouée:', injectResult.error);
+        // Fallback: essayer ScriptTag quand même
+        const scriptSrc = `${process.env.SHOPIFY_APP_URL}/js/beninpay-button.js`;
+        const apiBase = `https://${session.shop}/admin/api/${LATEST_API_VERSION}`;
+        const stHeaders = { 'X-Shopify-Access-Token': session.accessToken, 'Content-Type': 'application/json' };
+        await fetch(`${apiBase}/script_tags.json`, {
+          method: 'POST',
+          headers: stHeaders,
+          body: JSON.stringify({ script_tag: { event: 'onload', src: scriptSrc, display_scope: 'online_store' } })
+        });
+        console.log('✅ Fallback ScriptTag installé');
       }
-    } catch (stErr) {
-      console.warn('⚠️ ScriptTag install error:', stErr.message);
+    } catch (injectErr) {
+      console.warn('⚠️ Theme inject error:', injectErr.message);
     }
 
     // Enregistrer le marchand dans la DB

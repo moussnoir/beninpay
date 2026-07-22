@@ -1,0 +1,56 @@
+{% comment %}
+  BeninPay Mobile Money - App Embed (se charge sur TOUTES les pages)
+  Detecte automatiquement la page panier et injecte le bouton.
+  Fonctionne sur les boutiques dev protegees par mot de passe.
+{% endcomment %}
+
+<script>
+  window.__BENINPAY_CONFIG__ = {
+    shopDomain: "{{ shop.permanent_domain }}",
+    appUrl: "{{ block.settings.app_url }}",
+    buttonColor: "{{ block.settings.button_color }}",
+    buttonText: "{{ block.settings.button_text }}",
+    showOperators: {{ block.settings.show_operators | json }},
+    currency: "{{ shop.currency }}",
+    moneyFormat: {{ shop.money_format | json }}
+  };
+</script>
+
+{{ 'beninpay-storefront.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'beninpay-storefront.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "BeninPay Mobile Money",
+  "target": "body",
+  "javascript": "beninpay-storefront.js",
+  "stylesheet": "beninpay-storefront.css",
+  "settings": [
+    {
+      "type": "text",
+      "id": "app_url",
+      "label": "URL de l'application BeninPay",
+      "default": "https://beninpay.onrender.com",
+      "info": "L'URL de votre serveur BeninPay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_operators",
+      "label": "Afficher les logos des operateurs",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Couleur du bouton",
+      "default": "#00b894"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texte du bouton",
+      "default": "Payer avec Mobile Money"
+    }
+  ]
+}
+{% endschema %}

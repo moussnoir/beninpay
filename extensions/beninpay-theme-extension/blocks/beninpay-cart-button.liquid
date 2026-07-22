@@ -1,0 +1,50 @@
+{% comment %}
+  BeninPay Mobile Money - Bouton de paiement sur la page panier
+  Theme App Extension - Fonctionne sur les boutiques dev protegees par mot de passe
+{% endcomment %}
+
+{% if request.page_type == 'cart' or template.name == 'cart' %}
+<div id="beninpay-extension-root" data-shop="{{ shop.permanent_domain }}" data-app-url="{{ block.settings.app_url }}">
+  <!-- Le script injectera le bouton ici -->
+</div>
+
+{{ 'beninpay-storefront.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'beninpay-storefront.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "BeninPay Mobile Money",
+  "target": "section",
+  "enabled_on": {
+    "templates": ["cart"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "app_url",
+      "label": "URL de l'application BeninPay",
+      "default": "https://beninpay.onrender.com",
+      "info": "L'URL de votre serveur BeninPay (ex: https://beninpay.onrender.com)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_operators",
+      "label": "Afficher les logos des operateurs",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Couleur du bouton",
+      "default": "#00b894"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texte du bouton",
+      "default": "Payer avec Mobile Money"
+    }
+  ]
+}
+{% endschema %}
