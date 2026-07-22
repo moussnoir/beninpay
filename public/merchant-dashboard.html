@@ -234,7 +234,10 @@ footer{text-align:center;color:var(--gris);font-size:12px;padding:20px}
   </div>
 
   <div class="carte">
-    <h2>Dernières transactions</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <h2>Dernières transactions</h2>
+      <button class="btn secondaire" onclick="syncAllOrders()" style="font-size:12px;padding:6px 12px;">🔄 Synchroniser</button>
+    </div>
     <p class="sous">Les plus récentes — tout voir dans l'onglet Transactions</p>
     <div id="recentTransactions">
       <div class="empty"><div class="icon">📭</div><p>Aucune transaction pour le moment</p></div>
@@ -524,6 +527,25 @@ async function loadOrders() {
       displayRecentOrders(data.orders.slice(0, 5));
     }
   } catch(e) { console.log('Orders:', e.message); }
+}
+
+async function syncAllOrders() {
+  try {
+    toast('Synchronisation en cours...');
+    const res = await fetch(`${API}/api/checkout/sync-all`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ shop })
+    });
+    const data = await res.json();
+    if (data.success) {
+      toast(`${data.synced} commande(s) synchronisée(s) ✓`);
+      loadDashboard();
+      loadOrders();
+    } else {
+      toast('Erreur: ' + (data.error || 'Echec'));
+    }
+  } catch(e) { toast('Erreur: ' + e.message); }
 }
 
 function displayRecentOrders(orders) {

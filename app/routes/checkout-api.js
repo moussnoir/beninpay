@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPayment } from '../services/fedapay.service.js';
+import { createPayment, checkTransactionStatus } from '../services/fedapay.service.js';
 import { loadData, saveData } from '../../db/json-store.js';
 
 const router = express.Router();
@@ -167,6 +167,174 @@ router.get('/orders', async (req, res) => {
 
     res.json({ success: true, orders, total: orders.length });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * POST /api/checkout/sync/:orderId
+ * Synchronise le statut d'une commande avec FedaPay et met a jour le dashboard
+ */
+router.post('/sync/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const data = loadData();
+    const order = (data.orders || []).find(o => o.order_ref === orderId);
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Commande non trouvee' });
+    }
+
+    // Si deja payee, rien a faire
+    if (order.payment_status === 'completed') {
+      return res.json({ success: true, message: 'Deja payee', order });
+    }
+
+    // Verifier le statut sur FedaPay
+    let fedapayStatus = null;
+    if (order.fedapay_transaction_id && !order.fedapay_transaction_id.startsWith('fb_')) {
+      const result = await checkTransactionStatus(order.fedapay_transaction_id);
+      if (result.success) {
+        fedapayStatus = result.status;
+      }
+    }
+
+    // Forcer la mise a jour si status=approved ou si demande manuelle
+    const forceApprove = req.body.force === true;
+    if (fedapayStatus === 'approved' || fedapayStatus === 'completed' || forceApprove) {
+      order.status = 'paid';
+      order.payment_status = 'completed';
+      order.paid_at = new Date().toISOString();
+
+      // Creer la transaction dans le dashboard marchand
+      const shopDomain = order.shop_domain;
+      const merchant = (data.merchants || []).find(m =>
+        m.shop_domain === shopDomain ||
+        shopDomain?.includes(m.shop_domain?.split('.')[0]) ||
+        m.shop_domain?.includes(shopDomain?.split('.')[0])
+      );
+
+      if (merchant) {
+        const amount = order.amount;
+        const fee = Math.round(amount * 0.02);
+        const merchantAmount = amount - fee;
+        const txId = order.fedapay_transaction_id || `manual_${Date.now()}`;
+
+        if (!data.transactions) data.transactions = [];
+        const existing = data.transactions.find(t =>
+          t.order_id === order.order_ref || t.fedapay_transaction_id === txId
+        );
+
+        if (!existing) {
+          data.transactions.push({
+            id: data.transactions.length + 1,
+            merchant_id: merchant.id,
+            fedapay_transaction_id: txId,
+            order_id: order.order_ref,
+            shop_domain: shopDomain,
+            amount: amount,
+            beninpay_fee: fee,
+            beninpay_profit: fee,
+            merchant_amount: merchantAmount,
+            total: amount,
+            status: 'completed',
+            customer_name: order.customer_name || '',
+            customer_email: order.customer_email || '',
+            operator: order.operator || '',
+            product_title: order.product_title || '',
+            created_at: new Date().toISOString()
+          });
+
+          merchant.balance = (merchant.balance || 0) + merchantAmount;
+          merchant.total_earned = (merchant.total_earned || 0) + merchantAmount;
+        }
+      }
+
+      saveData(data);
+      return res.json({
+        success: true,
+        message: 'Commande synchronisee et marquee comme payee',
+        fedapay_status: fedapayStatus,
+        order
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Transaction toujours en attente sur FedaPay',
+      fedapay_status: fedapayStatus,
+      order
+    });
+  } catch (error) {
+    console.error('[Sync] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * POST /api/checkout/sync-all
+ * Synchronise TOUTES les commandes en attente
+ */
+router.post('/sync-all', async (req, res) => {
+  try {
+    const { shop } = req.body;
+    const data = loadData();
+    let orders = (data.orders || []).filter(o => o.payment_status !== 'completed');
+    if (shop) orders = orders.filter(o => o.shop_domain === shop);
+
+    let synced = 0;
+    for (const order of orders) {
+      if (order.fedapay_transaction_id && !order.fedapay_transaction_id.startsWith('fb_')) {
+        const result = await checkTransactionStatus(order.fedapay_transaction_id);
+        if (result.success && (result.status === 'approved' || result.status === 'completed')) {
+          order.status = 'paid';
+          order.payment_status = 'completed';
+          order.paid_at = new Date().toISOString();
+
+          const shopDomain = order.shop_domain;
+          const merchant = (data.merchants || []).find(m =>
+            m.shop_domain === shopDomain ||
+            shopDomain?.includes(m.shop_domain?.split('.')[0])
+          );
+
+          if (merchant) {
+            const amount = order.amount;
+            const fee = Math.round(amount * 0.02);
+            const merchantAmount = amount - fee;
+            if (!data.transactions) data.transactions = [];
+            const existing = data.transactions.find(t => t.order_id === order.order_ref);
+            if (!existing) {
+              data.transactions.push({
+                id: data.transactions.length + 1,
+                merchant_id: merchant.id,
+                fedapay_transaction_id: order.fedapay_transaction_id,
+                order_id: order.order_ref,
+                shop_domain: shopDomain,
+                amount,
+                beninpay_fee: fee,
+                beninpay_profit: fee,
+                merchant_amount: merchantAmount,
+                total: amount,
+                status: 'completed',
+                customer_name: order.customer_name || '',
+                customer_email: order.customer_email || '',
+                operator: order.operator || '',
+                product_title: order.product_title || '',
+                created_at: new Date().toISOString()
+              });
+              merchant.balance = (merchant.balance || 0) + merchantAmount;
+              merchant.total_earned = (merchant.total_earned || 0) + merchantAmount;
+            }
+          }
+          synced++;
+        }
+      }
+    }
+
+    saveData(data);
+    res.json({ success: true, synced, total_pending: orders.length });
+  } catch (error) {
+    console.error('[SyncAll] Error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
