@@ -143,7 +143,10 @@
 
   function isCartPage() {
     const path = window.location.pathname;
-    return path === '/cart' || path.startsWith('/cart');
+    if (path === '/cart' || path.startsWith('/cart')) return true;
+    // Chercher un formulaire de panier sur la page actuelle
+    if (document.querySelector('form[action="/cart"], [data-cart-form], .cart, #cart, .cart-form')) return true;
+    return false;
   }
 
   function isCheckoutPage() {
@@ -157,9 +160,8 @@
 
   async function createButton() {
     const cart = await getCart();
-    if (!cart || cart.item_count === 0) return;
-
-    const total = Math.round(cart.total_price / 100);
+    const total = cart ? Math.round(cart.total_price / 100) : 0;
+    const hasItems = cart && cart.item_count > 0;
 
     const wrapper = document.createElement('div');
     wrapper.className = 'beninpay-cart-wrapper';
@@ -167,7 +169,7 @@
       <div class="beninpay-or">ou</div>
       <button class="beninpay-cart-btn" id="beninpay-trigger">
         <span style="font-size:22px;">📱</span>
-        <span>Payer ${total.toLocaleString('fr-FR')} FCFA avec Mobile Money</span>
+        <span>${hasItems ? `Payer ${total.toLocaleString('fr-FR')} FCFA avec Mobile Money` : 'Payer avec Mobile Money'}</span>
       </button>
       <div class="beninpay-cart-info">
         <span>📱 MTN MoMo</span>
@@ -181,17 +183,33 @@
     const checkoutBtn = document.querySelector(
       '[name="checkout"], [type="submit"][name="checkout"], .cart__checkout-button, .cart__submit, ' +
       'button[name="checkout"], input[name="checkout"], .cart-checkout-button, ' +
-      '[data-cart-checkout], .cart__ctas, .cart__buttons, .cart-buttons'
+      '[data-cart-checkout], .cart__ctas, .cart__buttons, .cart-buttons, ' +
+      '.shopify-payment-button, .additional-checkout-buttons, [data-shopify="payment-button"]'
     );
+
+    let inserted = false;
 
     if (checkoutBtn) {
       const target = checkoutBtn.closest('.cart__ctas') || checkoutBtn.closest('.cart__buttons') ||
-                     checkoutBtn.closest('.cart-buttons') || checkoutBtn.parentNode;
+                     checkoutBtn.closest('.cart-buttons') || checkoutBtn.closest('.cart__footer') ||
+                     checkoutBtn.parentNode;
       target.appendChild(wrapper);
-    } else {
+      inserted = true;
+    }
+
+    if (!inserted) {
       // Fallback: chercher le formulaire du panier
-      const cartForm = document.querySelector('form[action="/cart"], .cart-form, [data-cart-form]');
-      if (cartForm) cartForm.appendChild(wrapper);
+      const cartForm = document.querySelector('form[action="/cart"], .cart-form, [data-cart-form], .cart, #cart, #CartDrawer, .cart-drawer');
+      if (cartForm) {
+        cartForm.appendChild(wrapper);
+        inserted = true;
+      }
+    }
+
+    if (!inserted) {
+      // Dernier recours: bouton flottant en bas de page
+      wrapper.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:99999;padding:12px 16px;background:white;box-shadow:0 -4px 20px rgba(0,0,0,0.15);';
+      document.body.appendChild(wrapper);
     }
 
     wrapper.querySelector('#beninpay-trigger').addEventListener('click', function(e) {
@@ -221,7 +239,10 @@
 
   async function openPaymentModal() {
     const cart = await getCart();
-    if (!cart || cart.item_count === 0) return;
+    if (!cart || cart.item_count === 0) {
+      alert('Ajoutez des produits au panier avant de payer.');
+      return;
+    }
 
     const total = Math.round(cart.total_price / 100);
 
@@ -364,12 +385,32 @@
     }
   };
 
-  // Init: ne s'affiche que sur la page panier
+  // Init: s'affiche sur la page panier ou toute page avec un formulaire cart
   function init() {
-    if (!isCartPage()) return;
-    injectStyles();
-    createButton();
-    createModal();
+    console.log('[BeninPay] Script chargé sur:', window.location.pathname);
+
+    // Sur la page panier, afficher immédiatement
+    if (isCartPage()) {
+      console.log('[BeninPay] Page panier détectée, injection du bouton...');
+      injectStyles();
+      createButton();
+      createModal();
+      return;
+    }
+
+    // Sur les autres pages, observer si un cart drawer apparait
+    const observer = new MutationObserver(() => {
+      if (isCartPage() && !document.getElementById('beninpay-trigger')) {
+        console.log('[BeninPay] Cart détecté via mutation, injection...');
+        injectStyles();
+        createButton();
+        createModal();
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Arrêter après 10s pour ne pas gaspiller de ressources
+    setTimeout(() => observer.disconnect(), 10000);
   }
 
   if (document.readyState === 'loading') {
