@@ -192,8 +192,9 @@ router.post('/sync/:orderId', async (req, res) => {
 
     // Verifier le statut sur FedaPay
     let fedapayStatus = null;
-    if (order.fedapay_transaction_id && !order.fedapay_transaction_id.startsWith('fb_')) {
-      const result = await checkTransactionStatus(order.fedapay_transaction_id);
+    const txId = order.fedapay_transaction_id ? String(order.fedapay_transaction_id) : '';
+    if (txId && !txId.startsWith('fb_')) {
+      const result = await checkTransactionStatus(txId);
       if (result.success) {
         fedapayStatus = result.status;
       }
@@ -284,8 +285,9 @@ router.post('/sync-all', async (req, res) => {
 
     let synced = 0;
     for (const order of orders) {
-      if (order.fedapay_transaction_id && !order.fedapay_transaction_id.startsWith('fb_')) {
-        const result = await checkTransactionStatus(order.fedapay_transaction_id);
+      const txId = order.fedapay_transaction_id ? String(order.fedapay_transaction_id) : '';
+      if (txId && !txId.startsWith('fb_')) {
+        const result = await checkTransactionStatus(txId);
         if (result.success && (result.status === 'approved' || result.status === 'completed')) {
           order.status = 'paid';
           order.payment_status = 'completed';
