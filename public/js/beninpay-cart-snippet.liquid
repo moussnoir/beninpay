@@ -1,0 +1,36 @@
+{% comment %}
+  BeninPay - Bouton Mobile Money pour page panier
+  Coller ce code dans sections/cart-template.liquid ou templates/cart.liquid
+  AVANT la fermeture du formulaire ou apres le bouton checkout
+{% endcomment %}
+
+{% if template == 'cart' %}
+<div id="beninpay-wrapper" style="margin:16px 0;padding:0;">
+  <div style="text-align:center;margin:12px 0;font-size:12px;color:#999;display:flex;align-items:center;gap:12px;">
+    <span style="flex:1;height:1px;background:#ddd;"></span>
+    <span>ou</span>
+    <span style="flex:1;height:1px;background:#ddd;"></span>
+  </div>
+  <button id="beninpay-trigger" style="
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    width:100%;padding:18px 24px;
+    background:linear-gradient(135deg,#0B3D2E,#14503D);
+    color:white;border:none;border-radius:12px;
+    font-size:16px;font-weight:700;cursor:pointer;
+    font-family:inherit;
+    box-shadow:0 4px 15px rgba(11,61,46,0.3);
+    transition:all 0.3s;
+  " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 25px rgba(11,61,46,0.4)'"
+     onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(11,61,46,0.3)'"
+     onclick="window.location.href='https://beninpay.onrender.com/checkout.html?shop={{ shop.permanent_domain }}&amount={{ cart.total_price | divided_by: 100 }}&items={{ cart.item_count }}'">
+    <span style="font-size:22px;">📱</span>
+    <span>Payer {{ cart.total_price | money_without_trailing_zeros }} avec Mobile Money</span>
+  </button>
+  <div style="display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:11px;color:#666;">
+    <span>📱 MTN MoMo</span>
+    <span>📲 Moov Money</span>
+    <span>💵 Celtis Cash</span>
+  </div>
+  <div style="text-align:center;margin-top:6px;font-size:10px;color:#999;">🔒 Paiement securise via FedaPay</div>
+</div>
+{% endif %}

@@ -132,9 +132,17 @@
 
   async function getCart() {
     try {
-      const res = await fetch('/cart.js');
-      cartData = await res.json();
-      return cartData;
+      const res = await fetch('/cart.js', { credentials: 'same-origin' });
+      const text = await res.text();
+      // Vérifier que c'est bien du JSON (pas la page mot de passe)
+      if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
+        cartData = JSON.parse(text);
+        console.log('[BeninPay] Cart chargé:', cartData.item_count, 'articles');
+        return cartData;
+      } else {
+        console.warn('[BeninPay] /cart.js a retourné du HTML (page protégée?)');
+        return null;
+      }
     } catch (e) {
       console.error('[BeninPay] Error fetching cart:', e);
       return null;
