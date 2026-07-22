@@ -92,14 +92,38 @@ const directAmount = params.get('amount');
 const directShop = params.get('shop');
 let selectedOp = null;
 
+const statusParam = params.get('status');
+
 async function init() {
-  if (orderId) {
+  if (statusParam === 'completed' || statusParam === 'approved') {
+    showPaymentSuccess();
+  } else if (orderId) {
     await loadOrder();
   } else if (directAmount) {
     showDirectPayment();
   } else {
     showError('Aucune commande specifiee');
   }
+}
+
+function showPaymentSuccess() {
+  document.getElementById('content').innerHTML = `
+    <div class="status-pending status-paid">
+      <div class="status-icon">✅</div>
+      <div class="status-text">Paiement confirme !</div>
+      <div class="status-sub">Votre paiement Mobile Money a ete accepte avec succes.</div>
+    </div>
+    <div class="order-details">
+      <div class="order-row"><span class="order-label">Statut</span><span class="order-value" style="color:#00b894;font-weight:700;">Paye ✓</span></div>
+      ${orderId ? '<div class="order-row"><span class="order-label">Reference</span><span class="order-value" style="font-size:11px;font-family:monospace;">' + orderId + '</span></div>' : ''}
+    </div>
+    <div style="background:#f0fff9;border-radius:12px;padding:16px;margin:16px 0;text-align:center;">
+      <p style="font-size:14px;color:#333;font-weight:600;">Merci pour votre achat !</p>
+      <p style="font-size:12px;color:#666;margin-top:4px;">Le marchand a ete notifie. Vous recevrez une confirmation par email.</p>
+    </div>
+    <div class="secure">🔒 Paiement securise par FedaPay | BeninPay</div>
+    <a href="javascript:window.close()" class="back-link">Fermer cette page</a>
+  `;
 }
 
 async function loadOrder() {

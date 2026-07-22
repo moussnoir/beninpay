@@ -6,6 +6,14 @@ import { sendPaymentConfirmation } from '../services/notification.service.js';
 
 const router = express.Router();
 
+// GET /webhooks/fedapay — FedaPay redirige le client ici apres paiement
+router.get('/fedapay', (req, res) => {
+  const { id, status, transaction_id } = req.query;
+  const orderId = req.query.order_id || req.query.custom_metadata || '';
+  console.log('[Webhook GET] Client redirect from FedaPay:', { id, status, transaction_id });
+  res.redirect(`/checkout.html?order=${orderId || transaction_id || id || 'unknown'}&status=${status || 'completed'}`);
+});
+
 router.post('/fedapay', async (req, res) => {
   try {
     const payload = req.body;
