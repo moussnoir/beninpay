@@ -158,6 +158,26 @@ app.post('/api/theme/inject-button', async (req, res) => {
   }
 });
 
+// Auto-inject using stored token (for existing installations)
+app.get('/api/theme/auto-inject', async (req, res) => {
+  try {
+    const shop = req.query.shop;
+    if (!shop) {
+      return res.status(400).json({ success: false, error: 'shop parameter required' });
+    }
+    const { loadData } = await import('./db/json-store.js');
+    const data = loadData();
+    const merchant = data.merchants?.find(m => m.shop_domain === shop);
+    if (!merchant || !merchant.access_token) {
+      return res.status(404).json({ success: false, error: 'Merchant not found or no access token. Reinstall the app.' });
+    }
+    const result = await injectButtonIntoTheme(shop, merchant.access_token);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.post('/api/theme/remove-button', async (req, res) => {
   try {
     const { shop, accessToken } = req.body;
