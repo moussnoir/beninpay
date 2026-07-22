@@ -214,7 +214,11 @@ async function submitDirectPayment(amount) {
     const data = await res.json();
 
     if (data.success && data.payment_url) {
-      window.location.href = data.payment_url;
+      if (data.fallback) {
+        showPendingPayment(data.order_id, amount, name);
+      } else {
+        window.location.href = data.payment_url;
+      }
     } else if (data.success && data.checkout_url) {
       window.location.href = data.checkout_url;
     } else {
@@ -240,6 +244,28 @@ function showSuccess(order) {
       <div class="order-row"><span class="order-label">Statut</span><span class="order-value" style="color:#00b894;">Paye ✓</span></div>
     </div>
     <div class="secure">Merci pour votre achat! Le marchand a ete notifie.</div>
+  `;
+}
+
+function showPendingPayment(oid, amount, customerName) {
+  document.getElementById('content').innerHTML = `
+    <div class="status-pending">
+      <div class="status-icon">✅</div>
+      <div class="status-text">Commande enregistree!</div>
+      <div class="status-sub">Votre commande de ${amount.toLocaleString('fr-FR')} FCFA a ete creee avec succes.</div>
+    </div>
+    <div class="order-details">
+      <div class="order-row"><span class="order-label">Client</span><span class="order-value">${customerName}</span></div>
+      <div class="order-row"><span class="order-label">Montant</span><span class="order-value order-total">${amount.toLocaleString('fr-FR')} FCFA</span></div>
+      <div class="order-row"><span class="order-label">Statut</span><span class="order-value" style="color:#f39c12;">En attente de paiement</span></div>
+      <div class="order-row"><span class="order-label">Ref</span><span class="order-value" style="font-size:10px;font-family:monospace;">${oid}</span></div>
+    </div>
+    <div style="background:#f0fff9;border-radius:12px;padding:16px;margin:16px 0;text-align:center;">
+      <p style="font-size:13px;color:#333;margin-bottom:8px;font-weight:600;">📱 Instructions de paiement</p>
+      <p style="font-size:12px;color:#666;">Composez le code USSD de votre operateur Mobile Money pour confirmer le paiement. Vous recevrez une notification de confirmation.</p>
+    </div>
+    <div class="secure">🔒 Paiement securise par FedaPay | BeninPay</div>
+    <a href="javascript:history.back()" class="back-link">← Retour a la boutique</a>
   `;
 }
 

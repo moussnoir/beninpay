@@ -4,7 +4,7 @@ const BENINPAY_SNIPPET_KEY = 'snippets/beninpay-button.liquid';
 const BENINPAY_MARKER = '<!-- BENINPAY_MOBILE_MONEY -->';
 
 const BENINPAY_SNIPPET = `${BENINPAY_MARKER}
-{% if template == 'cart' %}
+{% if template == 'cart' or request.page_type == 'cart' %}
 <div id="beninpay-wrapper" style="margin:16px 0;padding:0;">
   <div style="text-align:center;margin:12px 0;font-size:12px;color:#999;display:flex;align-items:center;gap:12px;">
     <span style="flex:1;height:1px;background:#ddd;"></span>
@@ -31,7 +31,7 @@ const BENINPAY_SNIPPET = `${BENINPAY_MARKER}
     <span>📲 Moov Money</span>
     <span>💵 Celtis Cash</span>
   </div>
-  <div style="text-align:center;margin-top:6px;font-size:10px;color:#999;">🔒 Paiement sécurisé via FedaPay</div>
+  <div style="text-align:center;margin-top:6px;font-size:10px;color:#999;">🔒 Paiement securise via FedaPay</div>
 </div>
 {% endif %}
 ${BENINPAY_MARKER}`;
