@@ -112,7 +112,7 @@ export async function createPayment(
           order_id: orderId,
           customer_name: customerName,
           customer_email: customerEmail,
-          shop_domain: orderId.split('-')[0] // Extraire shop si format shop-orderid
+          shop_domain: orderId.includes('.myshopify.com') ? orderId.split('-')[0] + '.myshopify.com' : orderId.split('-')[0]
         }
       },
       {

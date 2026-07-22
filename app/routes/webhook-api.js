@@ -10,7 +10,73 @@ const router = express.Router();
 router.get('/fedapay', (req, res) => {
   const { id, status, transaction_id } = req.query;
   const orderId = req.query.order_id || req.query.custom_metadata || '';
-  console.log('[Webhook GET] Client redirect from FedaPay:', { id, status, transaction_id });
+  console.log('[Webhook GET] Client redirect from FedaPay:', { id, status, transaction_id, orderId });
+
+  // Si le paiement est approuve, mettre a jour la commande et le dashboard
+  if (status === 'approved' || status === 'completed') {
+    try {
+      const data = loadData();
+      const txId = String(transaction_id || id || '');
+
+      // Trouver la commande par transaction_id FedaPay ou order_ref
+      const matchingOrder = (data.orders || []).find(o =>
+        o.fedapay_transaction_id === txId ||
+        o.order_ref === orderId
+      );
+
+      if (matchingOrder && matchingOrder.payment_status !== 'completed') {
+        matchingOrder.status = 'paid';
+        matchingOrder.payment_status = 'completed';
+        matchingOrder.paid_at = new Date().toISOString();
+        console.log(`[Webhook GET] Order marked as paid: ${matchingOrder.order_ref}`);
+
+        // Trouver le marchand et creer la transaction dans le dashboard
+        const shopDomain = matchingOrder.shop_domain;
+        const merchant = (data.merchants || []).find(m =>
+          m.shop_domain === shopDomain ||
+          shopDomain.includes(m.shop_domain?.split('.')[0])
+        );
+
+        if (merchant) {
+          const amount = matchingOrder.amount;
+          const fee = Math.round(amount * 0.02);
+          const merchantAmount = amount - fee;
+
+          if (!data.transactions) data.transactions = [];
+          const existingTxn = data.transactions.find(t => t.fedapay_transaction_id === txId);
+          if (!existingTxn) {
+            data.transactions.push({
+              id: data.transactions.length + 1,
+              merchant_id: merchant.id,
+              fedapay_transaction_id: txId,
+              order_id: matchingOrder.order_ref,
+              shop_domain: shopDomain,
+              amount: amount,
+              beninpay_fee: fee,
+              beninpay_profit: fee,
+              merchant_amount: merchantAmount,
+              total: amount,
+              status: 'completed',
+              customer_name: matchingOrder.customer_name || '',
+              customer_email: matchingOrder.customer_email || '',
+              operator: matchingOrder.operator || '',
+              product_title: matchingOrder.product_title || '',
+              created_at: new Date().toISOString()
+            });
+
+            merchant.balance = (merchant.balance || 0) + merchantAmount;
+            merchant.total_earned = (merchant.total_earned || 0) + merchantAmount;
+            console.log(`[Webhook GET] Dashboard updated: +${merchantAmount} FCFA for ${shopDomain}`);
+          }
+        }
+
+        saveData(data);
+      }
+    } catch (err) {
+      console.error('[Webhook GET] Error updating order:', err.message);
+    }
+  }
+
   res.redirect(`/checkout.html?order=${orderId || transaction_id || id || 'unknown'}&status=${status || 'completed'}`);
 });
 
@@ -56,8 +122,15 @@ router.post('/fedapay', async (req, res) => {
         console.log(`[Webhook] Order marked as paid: ${matchingOrder.order_ref}`);
       }
 
-      if (shopDomain) {
-        let merchant = data.merchants.find(m => m.shop_domain === shopDomain);
+      // Fallback: si pas de shopDomain dans metadata, le prendre de la commande
+      const resolvedShopDomain = shopDomain || (matchingOrder && matchingOrder.shop_domain) || '';
+
+      if (resolvedShopDomain) {
+        let merchant = data.merchants.find(m =>
+          m.shop_domain === resolvedShopDomain ||
+          resolvedShopDomain.includes(m.shop_domain?.split('.')[0]) ||
+          m.shop_domain?.includes(resolvedShopDomain.split('.')[0])
+        );
         if (merchant) {
           const fee = Math.round(amount * 0.02);
           const merchantAmount = amount - fee;
