@@ -89,28 +89,40 @@ router.get('/callback', async (req, res) => {
     console.log('✅ App installée avec succès pour:', session.shop);
     console.log('📊 Scopes accordés:', session.scope);
 
-    // Installer le ScriptTag pour le bouton Mobile Money
+    // Installer le ScriptTag pour le bouton Mobile Money sur la page panier
     try {
-      const scriptTagUrl = `https://${session.shop}/admin/api/${LATEST_API_VERSION}/script_tags.json`;
       const scriptSrc = `${process.env.SHOPIFY_APP_URL}/js/beninpay-button.js`;
-      const response = await fetch(scriptTagUrl, {
-        method: 'POST',
-        headers: {
-          'X-Shopify-Access-Token': session.accessToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          script_tag: {
-            event: 'onload',
-            src: scriptSrc,
-            display_scope: 'online_store'
-          }
-        })
-      });
-      if (response.ok) {
-        console.log('✅ ScriptTag installe:', scriptSrc);
+      const apiBase = `https://${session.shop}/admin/api/${LATEST_API_VERSION}`;
+      const headers = {
+        'X-Shopify-Access-Token': session.accessToken,
+        'Content-Type': 'application/json'
+      };
+
+      // D'abord vérifier si le ScriptTag existe déjà
+      const listRes = await fetch(`${apiBase}/script_tags.json`, { headers });
+      const existing = listRes.ok ? await listRes.json() : { script_tags: [] };
+      const alreadyInstalled = existing.script_tags?.some(st => st.src.includes('beninpay-button'));
+
+      if (!alreadyInstalled) {
+        const response = await fetch(`${apiBase}/script_tags.json`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            script_tag: {
+              event: 'onload',
+              src: scriptSrc,
+              display_scope: 'online_store'
+            }
+          })
+        });
+        if (response.ok) {
+          console.log('✅ ScriptTag installé automatiquement:', scriptSrc);
+        } else {
+          const errText = await response.text();
+          console.warn('⚠️ ScriptTag non installé (status', response.status, '):', errText);
+        }
       } else {
-        console.warn('⚠️ ScriptTag non installe:', await response.text());
+        console.log('✅ ScriptTag déjà présent, pas de doublon');
       }
     } catch (stErr) {
       console.warn('⚠️ ScriptTag install error:', stErr.message);

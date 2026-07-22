@@ -21,7 +21,7 @@ services:
       - key: SHOPIFY_APP_URL
         sync: false
       - key: SHOPIFY_SCOPES
-        value: read_orders,write_orders,read_products,read_customers,write_checkouts
+        value: read_orders,write_orders,read_products,read_customers,write_checkouts,write_script_tags,read_script_tags
       - key: ADMIN_PASSWORD
         sync: false
       - key: SIMULATION_MODE
