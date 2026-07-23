@@ -209,12 +209,21 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start
-app.listen(PORT, () => {
-  console.log(`\n[BeninPay] Server running on port ${PORT}`);
-  console.log(`[BeninPay] Health: http://localhost:${PORT}/health`);
-  console.log(`[BeninPay] Admin: http://localhost:${PORT}/admin-dashboard.html`);
-  console.log(`[BeninPay] Features: webhooks, email, CSV export, analytics, rate-limit, Sentry\n`);
+// Init database then start
+import { initStore } from './db/store.js';
+
+initStore().then(() => {
+  app.listen(PORT, () => {
+    console.log(`\n[BeninPay] Server running on port ${PORT}`);
+    console.log(`[BeninPay] DB: ${process.env.DATABASE_URL ? 'PostgreSQL' : 'JSON (ephemeral)'}`);
+    console.log(`[BeninPay] Health: http://localhost:${PORT}/health`);
+    console.log(`[BeninPay] Admin: http://localhost:${PORT}/admin-dashboard.html\n`);
+  });
+}).catch(err => {
+  console.error('[BeninPay] DB init failed:', err.message);
+  app.listen(PORT, () => {
+    console.log(`[BeninPay] Server started WITHOUT database on port ${PORT}`);
+  });
 });
 
 export default app;
