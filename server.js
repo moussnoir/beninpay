@@ -34,10 +34,11 @@ console.log('[BeninPay] Starting server v2.1...');
 console.log('[BeninPay] Environment:', process.env.NODE_ENV || 'development');
 console.log('[BeninPay] Root / -> merchant-dashboard.html (always)');
 
-// Security middleware
+// Security middleware (disable X-Frame-Options for Shopify embedded app)
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
+  frameguard: false,
 }));
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -48,11 +49,23 @@ app.use('/api/', apiLimiter);
 app.use('/api/payment/initiate', paymentLimiter);
 app.use('/webhooks/', webhookLimiter);
 
-// Route principale - toujours rediriger vers le merchant dashboard
+// Route principale - rediriger vers le dashboard ou l'app embedded
 app.get('/', (req, res) => {
   const shop = req.query.shop;
   const params = shop ? `?shop=${shop}` : '';
   return res.redirect(`/merchant-dashboard.html${params}`);
+});
+
+// App embedded dans Shopify Admin (iframe)
+app.get('/app', (req, res) => {
+  const shop = req.query.shop || '';
+  const shopDomain = shop.includes('.myshopify.com') ? shop : `${shop}.myshopify.com`;
+  res.set({
+    'Content-Type': 'text/html',
+    'Content-Security-Policy': `frame-ancestors https://${shopDomain} https://admin.shopify.com;`,
+    'X-Frame-Options': ''
+  });
+  res.sendFile('app.html', { root: 'public' });
 });
 
 // Static files

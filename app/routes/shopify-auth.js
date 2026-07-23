@@ -14,7 +14,7 @@ const shopify = shopifyApi({
   hostName: (process.env.SHOPIFY_APP_URL || 'localhost').replace(/https?:\/\//, ''),
   hostScheme: 'https',
   apiVersion: LATEST_API_VERSION,
-  isEmbeddedApp: false, // Non-embedded pour faciliter l'installation
+  isEmbeddedApp: true,
 });
 
 // Store pour les sessions (en prod, utiliser Redis ou DB)
@@ -168,8 +168,8 @@ router.get('/callback', async (req, res) => {
       console.log('✅ Marchand enregistre:', session.shop);
     }
 
-    // Rediriger vers le dashboard marchand
-    const redirectUrl = `${process.env.SHOPIFY_APP_URL}/merchant-dashboard.html?shop=${session.shop}&installed=true`;
+    // Rediriger vers l'app dans Shopify Admin (embedded)
+    const redirectUrl = `https://${session.shop}/admin/apps/beninpay`;
 
     res.send(`
       <!DOCTYPE html>
